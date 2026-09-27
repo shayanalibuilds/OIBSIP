@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- Server running on `http://localhost:5000` (in-memory or Mongo)
+- Server running on `http://localhost:8800` (in-memory or Mongo)
 - Client running on `http://localhost:5173`
 - Admin credentials: `admin@ovenly.dev / Admin1234` (default in dev with no `ADMIN_PASSWORD`)
 - Razorpay test keys: optional. If absent, the checkout page shows "Pay (dev mock)".

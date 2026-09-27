@@ -20,14 +20,14 @@ CLT=$!
 
 # Wait for both
 for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-  if curl -sf http://localhost:5000/api/health > /dev/null 2>&1 && curl -sf http://localhost:5173/ > /dev/null 2>&1; then
+  if curl -sf http://localhost:8800/api/health > /dev/null 2>&1 && curl -sf http://localhost:5173/ > /dev/null 2>&1; then
     echo "BOTH UP"
     break
   fi
   sleep 1
 done
 
-curl -s -w "SERVER HTTP:%{http_code}\n" http://localhost:5000/api/health
+curl -s -w "SERVER HTTP:%{http_code}\n" http://localhost:8800/api/health
 curl -s -w "CLIENT HTTP:%{http_code}\n" -o /dev/null http://localhost:5173/
 
 # Close any existing browser

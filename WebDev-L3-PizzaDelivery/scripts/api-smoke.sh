@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Smoke-tests every API route. Run from project root.
 set -uo pipefail
-BASE=http://localhost:5000/api
+BASE=http://localhost:8800/api
 
 pass=0
 fail=0

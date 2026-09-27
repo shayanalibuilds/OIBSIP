@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { z } from 'zod';
 
 const schema = z.object({
-  PORT: z.coerce.number().int().positive().default(5000),
+  PORT: z.coerce.number().int().positive().default(8800),
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   MONGODB_URI: z.string().url().optional().or(z.literal('')),
 

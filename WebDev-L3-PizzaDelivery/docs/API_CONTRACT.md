@@ -1,6 +1,6 @@
 # API contract
 
-Base URL: `http://localhost:5000` (dev). All routes are prefixed with `/api`.
+Base URL: `http://localhost:8800` (dev). All routes are prefixed with `/api`.
 
 Auth: `Authorization: Bearer <accessToken>` for protected routes. Access tokens are 15m,
 refresh tokens are 7d and rotated on use.

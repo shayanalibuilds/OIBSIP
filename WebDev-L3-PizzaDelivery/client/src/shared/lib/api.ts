@@ -18,7 +18,7 @@ export const tokenStore = {
   },
 };
 
-const BASE = (import.meta.env.VITE_API_URL ?? 'http://localhost:5000').replace(/\/$/, '');
+const BASE = (import.meta.env.VITE_API_URL ?? 'http://localhost:8800').replace(/\/$/, '');
 
 export class ApiError extends Error {
   constructor(

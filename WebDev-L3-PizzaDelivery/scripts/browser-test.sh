@@ -3,7 +3,7 @@
 set -u
 
 BASE_URL="http://localhost:5173"
-API_URL="http://localhost:5000"
+API_URL="http://localhost:8800"
 mkdir -p /tmp/screens
 
 pass=0

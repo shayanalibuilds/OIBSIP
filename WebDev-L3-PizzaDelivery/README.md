@@ -108,7 +108,7 @@ Edit `server/.env`:
 
 Edit `client/.env`:
 
-- `VITE_API_URL` — server URL, defaults to `http://localhost:5000`.
+- `VITE_API_URL` — server URL, defaults to `http://localhost:8800`.
 - `VITE_RAZORPAY_KEY_ID` — Razorpay TEST-mode public key. When unset, the checkout page shows
   a "Pay (dev mock)" button that calls the dev mock endpoint. Disabled in production builds.
 
@@ -132,7 +132,7 @@ so `npm run seed` is only needed when running against Mongo.
 ```bash
 # terminal 1 - server
 cd server
-npm run dev          # http://localhost:5000
+npm run dev          # http://localhost:8800
 
 # terminal 2 - client
 cd client
