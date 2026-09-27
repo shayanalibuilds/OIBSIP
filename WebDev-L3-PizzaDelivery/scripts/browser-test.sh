@@ -276,14 +276,34 @@ URL=$(get_url)
 if echo "$URL" | grep -q "/checkout"; then log_pass "Checkout loads"; else log_fail "Checkout" "URL=$URL"; fi
 if has_text "order details"; then log_pass "Order details"; else log_fail "Order details" "missing"; fi
 if has_text "pay (dev mock)"; then log_pass "Dev mock btn"; else log_fail "Dev mock" "missing"; fi
+# Wait for server-confirmed total (order creation may take a moment)
+for i in 1 2 3 4 5 6 7 8 9 10; do
+  if has_text "server-confirmed"; then break; fi
+  sleep 1
+done
 if has_text "server-confirmed"; then log_pass "Server total"; else log_fail "Server total" "missing"; fi
 agent-browser screenshot /tmp/screens/12-checkout.png --full 2>&1 | tail -1
 
 echo "--- 3.8 Pay ---"
-SNAP=$(agent-browser snapshot -i 2>&1)
-PAY_REF=$(get_ref "$SNAP" 'button "Pay (dev mock)"')
-agent-browser click "@$PAY_REF" 2>&1 | tail -1
-sleep 4
+# Wait for the Pay button to be enabled (order must be created first)
+for i in 1 2 3 4 5 6 7 8 9 10; do
+  SNAP=$(agent-browser snapshot -i 2>&1)
+  PAY_REF=$(echo "$SNAP" | grep 'button "Pay (dev mock' | grep -oE 'ref=e[0-9]+' | head -1 | sed 's/ref=//')
+  if [ -n "$PAY_REF" ]; then
+    # Check if button is disabled
+    DISABLED=$(echo "$SNAP" | grep 'button "Pay (dev mock' | grep -c 'disabled')
+    if [ "$DISABLED" -eq 0 ]; then break; fi
+  fi
+  sleep 1
+done
+if [ -n "$PAY_REF" ]; then
+  agent-browser click "@$PAY_REF" 2>&1 | tail -1
+  sleep 4
+else
+  echo "    Pay button not found, trying eval..."
+  agent-browser eval "var b=[...document.querySelectorAll('button')].find(b=>b.textContent.includes('dev mock')&&!b.disabled);b&&b.click()" 2>&1 | tail -1
+  sleep 4
+fi
 URL=$(get_url)
 if echo "$URL" | grep -q "/orders"; then log_pass "Pay -> /orders"; else log_fail "Pay" "URL=$URL"; fi
 
