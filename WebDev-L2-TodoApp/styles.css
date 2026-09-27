@@ -1,0 +1,41 @@
+
+:root{--bg:#f6f4ef;--ink:#1c1b19;--mute:#7b776f;--line:#ddd8ce;--ok:#2b6a4a;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--ink);font-family:Georgia,"Times New Roman",serif;line-height:1.5;}
+main{width:min(36rem,calc(100% - 2rem));margin:8vh auto 4rem;}
+h1{font-size:2.4rem;font-weight:400;letter-spacing:-0.04em;}
+header p, .empty, .count-row p, .when{color:var(--mute);font-family:system-ui,sans-serif;font-size:0.88rem;}
+form{margin:1.6rem 0 2rem;}
+input[type=text]{
+  width:100%;border:0;border-bottom:1px solid var(--ink);background:transparent;
+  padding:0.7rem 0;font:inherit;font-size:1.15rem;
+}
+input[type=text]:focus{outline:none;border-bottom-color:var(--ok);}
+.count-row{display:flex;justify-content:space-between;align-items:baseline;margin:1.4rem 0 0.4rem;}
+h2{font-size:0.78rem;letter-spacing:0.16em;text-transform:uppercase;font-family:system-ui,sans-serif;font-weight:600;}
+ul{list-style:none;}
+li{
+  display:grid;grid-template-columns:1.4rem 1fr auto;gap:0.7rem;align-items:start;
+  padding:0.85rem 0;border-bottom:1px solid var(--line);
+  animation:in 180ms ease;
+}
+li.done h3{color:var(--mute);text-decoration:line-through;}
+h3{font-size:1.08rem;font-weight:400;}
+.when{margin-top:0.2rem;}
+.check{
+  width:1.1rem;height:1.1rem;margin-top:0.2rem;border:1px solid var(--ink);
+  background:transparent;cursor:pointer;border-radius:50%;
+  transition:background 140ms ease, border-color 140ms ease;
+}
+li.done .check{background:var(--ok);border-color:var(--ok);}
+.acts{display:flex;gap:0.4rem;}
+.acts button{
+  border:0;background:none;color:var(--mute);font:inherit;font-family:system-ui,sans-serif;
+  font-size:0.8rem;cursor:pointer;
+}
+.acts button:hover{color:var(--ink);}
+.empty{display:none;margin:0.4rem 0 1rem;font-style:italic;}
+.empty.show{display:block;}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);}
+@keyframes in{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+@media (prefers-reduced-motion:reduce){li{animation:none;}}
