@@ -27,10 +27,11 @@ export function ForgotPasswordPage() {
   };
 
   return (
-    <div className="card" style={{ maxWidth: 480, margin: '0 auto' }}>
-      <h1 className="text-2xl font-bold mb-4">Forgot password</h1>
-      {err && <Alert variant="error">{err}</Alert>}
-      {msg && <Alert variant="success">{msg}</Alert>}
+    <div className="card form-card">
+      <h1>Forgot password</h1>
+      <p className="form-card__subtitle">Enter your email and we'll send a reset link if the account exists.</p>
+      {err && <Alert variant="error"><span className="alert__icon">⚠</span><span>{err}</span></Alert>}
+      {msg && <Alert variant="success"><span className="alert__icon">✓</span><span>{msg}</span></Alert>}
       <form onSubmit={onSubmit} noValidate>
         <Field
           label="Email"
@@ -40,9 +41,9 @@ export function ForgotPasswordPage() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
-        <Button type="submit" loading={loading} className="mt-2">Send reset link</Button>
+        <Button type="submit" loading={loading} className="btn--full mt-2">Send reset link</Button>
       </form>
-      <div className="mt-4 text-sm muted">
+      <div className="form-links">
         <Link to="/login">Back to sign in</Link>
       </div>
     </div>

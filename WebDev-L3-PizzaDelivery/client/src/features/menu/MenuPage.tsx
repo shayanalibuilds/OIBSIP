@@ -9,6 +9,13 @@ const CATEGORY_LABEL: Record<CatalogItem['category'], string> = {
   vegetable: 'Vegetables',
 };
 
+const CATEGORY_ICON: Record<CatalogItem['category'], string> = {
+  base: '🥖',
+  sauce: '🍅',
+  cheese: '🧀',
+  vegetable: '🫑',
+};
+
 function formatPrice(p: number) {
   return `₹${p.toFixed(2)}`;
 }
@@ -29,25 +36,30 @@ export function MenuPage() {
   }, {});
 
   return (
-    <div className="stack">
-      <div>
-        <h1 className="text-2xl font-bold mb-2">Menu</h1>
-        <p className="muted">All ingredients are priced per pizza. Build your own from /build.</p>
+    <div className="stack--lg">
+      <div className="section-header">
+        <h1>Menu</h1>
+        <p>All ingredients are priced per pizza. Build your own custom combination from the builder.</p>
       </div>
       {(['base', 'sauce', 'cheese', 'vegetable'] as const).map((cat) => (
         <section key={cat}>
-          <h2 className="text-xl font-semibold mb-3">{CATEGORY_LABEL[cat]}</h2>
+          <div className="flex" style={{ marginBottom: 'var(--space-4)' }}>
+            <span style={{ fontSize: '1.5rem' }} aria-hidden="true">{CATEGORY_ICON[cat]}</span>
+            <h2 style={{ fontSize: '1.375rem' }}>{CATEGORY_LABEL[cat]}</h2>
+          </div>
           <div className="grid grid--catalog">
             {(byCat[cat] ?? []).map((it) => (
-              <article key={it.id} className="card">
-                <h3 className="font-semibold">{it.name}</h3>
-                <div className="muted text-sm">{it.slug}</div>
-                <div className="flex-between mt-4">
-                  <span className="font-bold">{formatPrice(it.price)}</span>
+              <article key={it.id} className="menu-card">
+                <div>
+                  <div className="menu-card__name">{it.name}</div>
+                  <div className="menu-card__slug">{it.slug}</div>
+                </div>
+                <div className="menu-card__footer">
+                  <span className="menu-card__price">{formatPrice(it.price)}</span>
                   {it.stock <= it.lowStockThreshold ? (
                     <span className="badge badge--low">Low stock</span>
                   ) : (
-                    <span className="muted text-sm">{it.stock} in stock</span>
+                    <span className="text-sm subtle">{it.stock} in stock</span>
                   )}
                 </div>
               </article>

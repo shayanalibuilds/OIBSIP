@@ -31,9 +31,10 @@ export function LoginPage() {
   };
 
   return (
-    <div className="card" style={{ maxWidth: 440, margin: '0 auto' }}>
-      <h1 className="text-2xl font-bold mb-4">Sign in</h1>
-      {err && <Alert variant="error">{err}</Alert>}
+    <div className="card form-card">
+      <h1>Sign in</h1>
+      <p className="form-card__subtitle">Welcome back. Build your next pizza.</p>
+      {err && <Alert variant="error"><span className="alert__icon">⚠</span><span>{err}</span></Alert>}
       <form onSubmit={onSubmit} noValidate>
         <Field
           label="Email"
@@ -53,12 +54,12 @@ export function LoginPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <Button type="submit" loading={loading} className="mt-2">Sign in</Button>
+        <Button type="submit" loading={loading} className="btn--full mt-2">Sign in</Button>
       </form>
-      <div className="mt-4 text-sm muted">
+      <div className="form-links">
         New here? <Link to="/register">Create an account</Link>
       </div>
-      <div className="mt-2 text-sm muted">
+      <div className="form-links">
         Forgot password? <Link to="/forgot">Reset it</Link>
       </div>
     </div>

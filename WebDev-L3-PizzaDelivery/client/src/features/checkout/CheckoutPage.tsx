@@ -177,64 +177,87 @@ export function CheckoutPage() {
   const orderFailed = createOrder.isError && !order;
 
   return (
-    <div className="stack">
-      <div>
-        <h1 className="text-2xl font-bold mb-2">Checkout</h1>
-        <p className="muted">Server recalculates the total — the number below is informational.</p>
+    <div className="stack--lg">
+      <div className="section-header">
+        <h1>Checkout</h1>
+        <p>Server recalculates the total — the number below is informational.</p>
       </div>
 
-      {err && <Alert variant="error">{err}</Alert>}
+      {err && <Alert variant="error"><span className="alert__icon">⚠</span><span>{err}</span></Alert>}
       {orderFailed && (
         <Alert variant="error">
-          Could not create order: {err ?? 'Unknown error'}.{' '}
-          <button
-            type="button"
-            onClick={handleRetry}
-            style={{ background: 'none', border: 'none', color: 'inherit', textDecoration: 'underline', cursor: 'pointer', display: 'inline', padding: 0, font: 'inherit' }}
-          >
-            Retry
-          </button>
+          <span className="alert__icon">⚠</span>
+          <span>
+            Could not create order: {err ?? 'Unknown error'}.{' '}
+            <button
+              type="button"
+              onClick={handleRetry}
+              style={{ background: 'none', border: 'none', color: 'inherit', textDecoration: 'underline', cursor: 'pointer', display: 'inline', padding: 0, font: 'inherit', fontWeight: 600 }}
+            >
+              Retry
+            </button>
+          </span>
         </Alert>
       )}
 
-      <div className="card">
-        <h2 className="font-semibold mb-4">Order details</h2>
-        <div className="flex-between mb-2"><span>Base</span><span>{base?.name ?? '—'}</span></div>
-        <div className="flex-between mb-2"><span>Sauce</span><span>{sauce?.name ?? '—'}</span></div>
-        <div className="flex-between mb-2"><span>Cheese</span><span>{cheese?.name ?? '—'}</span></div>
-        <div className="flex-between mb-2"><span>Vegetables</span><span>{vegs.map((v) => v?.name).join(', ') || '—'}</span></div>
-        <div className="flex-between mb-2"><span>Quantity</span><span>{quantity}</span></div>
-        <div className="flex-between mb-2"><span>Unit price</span><span>{formatPrice(unit)}</span></div>
-        <hr style={{ border: 'none', borderTop: '1px solid var(--color-border)' }} />
-        <div className="flex-between mt-4">
-          <span className="font-semibold">Estimated total</span>
-          <span className="font-bold text-lg">{formatPrice(unit * quantity)}</span>
+      <div className="card" style={{ maxWidth: 480 }}>
+        <h2 style={{ fontSize: '1.125rem', marginBottom: 'var(--space-4)' }}>Order details</h2>
+        <div className="detail-row">
+          <span className="detail-row__label">Base</span>
+          <span className="detail-row__value">{base?.name ?? '—'}</span>
+        </div>
+        <div className="detail-row">
+          <span className="detail-row__label">Sauce</span>
+          <span className="detail-row__value">{sauce?.name ?? '—'}</span>
+        </div>
+        <div className="detail-row">
+          <span className="detail-row__label">Cheese</span>
+          <span className="detail-row__value">{cheese?.name ?? '—'}</span>
+        </div>
+        <div className="detail-row">
+          <span className="detail-row__label">Vegetables</span>
+          <span className="detail-row__value">{vegs.map((v) => v?.name).join(', ') || '—'}</span>
+        </div>
+        <div className="detail-row">
+          <span className="detail-row__label">Quantity</span>
+          <span className="detail-row__value">{quantity}</span>
+        </div>
+        <div className="detail-row">
+          <span className="detail-row__label">Unit price</span>
+          <span className="detail-row__value">{formatPrice(unit)}</span>
+        </div>
+        <div className="detail-row detail-row--total">
+          <span className="detail-row__label">Estimated total</span>
+          <span className="detail-row__value">{formatPrice(unit * quantity)}</span>
         </div>
         {order && (
-          <div className="muted text-sm mt-2">
-            Server-confirmed total: <strong>{formatPrice(order.price)}</strong> (status:{' '}
-            <span className={`badge badge--${order.paymentStatus}`}>{order.paymentStatus}</span>)
+          <div className="muted text-sm mt-4" style={{ textAlign: 'center' }}>
+            Server-confirmed total: <strong>{formatPrice(order.price)}</strong> ·{' '}
+            <span className={`badge badge--${order.paymentStatus}`}>{order.paymentStatus}</span>
           </div>
         )}
         {orderCreating && (
-          <div className="muted text-sm mt-2">
-            <span className="spinner" aria-hidden="true" /> Creating your order…
+          <div className="muted text-sm mt-3" style={{ textAlign: 'center' }}>
+            <span className="spinner spinner--sm" aria-hidden="true" /> Creating your order…
           </div>
         )}
       </div>
 
-      <div className="card">
-        <h2 className="font-semibold mb-4">Payment</h2>
+      <div className="card" style={{ maxWidth: 480 }}>
+        <h2 style={{ fontSize: '1.125rem', marginBottom: 'var(--space-4)' }}>Payment</h2>
         {!RAZORPAY_KEY && IS_DEV && (
           <Alert variant="info">
-            No Razorpay test key configured. Use the dev mock button below — it mirrors the verify flow
-            server-side (marks paid, decrements stock) without making a real charge. Disabled in production.
+            <span className="alert__icon">ℹ</span>
+            <span>
+              No Razorpay test key configured. Use the dev mock button below — it mirrors the verify flow
+              server-side without making a real charge. Disabled in production.
+            </span>
           </Alert>
         )}
         {!RAZORPAY_KEY && !IS_DEV && (
-          <Alert variant="error">Razorpay key missing and dev mock is disabled outside development.</Alert>
+          <Alert variant="error"><span className="alert__icon">⚠</span><span>Razorpay key missing and dev mock is disabled outside development.</span></Alert>
         )}
-        <div className="flex flex-wrap mt-4">
+        <div className="flex flex-wrap mt-5">
           {orderFailed ? (
             <Button variant="secondary" onClick={handleRetry} loading={orderCreating}>
               Retry order creation
@@ -253,7 +276,7 @@ export function CheckoutPage() {
               loading={payWithDevMock.isPending || orderCreating || !order}
               disabled={!order}
             >
-              {orderCreating ? 'Creating order…' : `Pay (dev mock)${order ? ' ' + formatPrice(order.price) : ''}`}
+              {orderCreating ? 'Creating order…' : `Pay (dev mock)${order ? ' · ' + formatPrice(order.price) : ''}`}
             </Button>
           ) : null}
           <Button variant="ghost" onClick={() => navigate('/build')}>Back to builder</Button>

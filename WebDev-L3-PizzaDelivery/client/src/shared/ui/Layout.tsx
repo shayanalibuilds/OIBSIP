@@ -17,7 +17,10 @@ export function Navbar() {
   return (
     <header className="navbar">
       <div className="navbar__inner">
-        <Link to="/" className="navbar__brand">Ovenly</Link>
+        <Link to="/" className="navbar__brand">
+          <span className="navbar__brand-icon" aria-hidden="true">🍕</span>
+          Ovenly
+        </Link>
         <nav className="navbar__links" aria-label="Main navigation">
           <NavLink to="/menu" className={linkClass}>Menu</NavLink>
           <NavLink to="/build" className={linkClass}>Build</NavLink>
@@ -25,7 +28,7 @@ export function Navbar() {
           {user?.role === 'admin' && <NavLink to="/admin" className={linkClass}>Admin</NavLink>}
           {user ? (
             <>
-              <span className="muted text-sm hide-mobile" aria-label="Signed in user">{user.email}</span>
+              <span className="navbar__user hide-mobile">{user.email}</span>
               <Button variant="ghost" className="btn--small" onClick={handleLogout}>Sign out</Button>
             </>
           ) : (
@@ -42,11 +45,14 @@ export function Footer() {
     <footer className="footer">
       <div className="footer__inner">
         <div>
-          <strong>Ovenly</strong> — build your pizza, pay in test mode, watch it travel from kitchen to door.
+          <div className="footer__brand">Ovenly</div>
+          <p className="footer__tagline">
+            Build your pizza, pay in test mode, and watch it travel from kitchen to your door in real time.
+          </p>
         </div>
-        <div>
-          <div>Support: hello@ovenly.dev</div>
-          <div>123 Pie Street, Crustville</div>
+        <div className="footer__contact">
+          <div className="footer__contact-line">Support: hello@ovenly.dev</div>
+          <div className="footer__contact-line">123 Pie Street, Crustville</div>
         </div>
       </div>
     </footer>

@@ -28,32 +28,33 @@ function formatDate(iso: string) {
 function OrderCard({ order }: { order: OrderPublic }) {
   const currentIdx = STATUS_FLOW.indexOf(order.status);
   return (
-    <article className="card">
-      <div className="flex-between mb-2">
+    <article className="order-card">
+      <div className="order-card__header">
         <div>
-          <h3 className="font-semibold">Order #{order.id.slice(-6)}</h3>
-          <div className="muted text-sm">{formatDate(order.createdAt)}</div>
+          <div className="order-card__id">Order #{order.id.slice(-6)}</div>
+          <div className="order-card__date">{formatDate(order.createdAt)}</div>
         </div>
-        <div className="flex gap-2">
+        <div className="order-card__badges">
           <span className={`badge badge--${order.status}`}>{STATUS_LABEL[order.status]}</span>
           <span className={`badge badge--${order.paymentStatus}`}>{order.paymentStatus}</span>
         </div>
       </div>
-      <div className="text-sm muted">
+      <div className="order-card__desc">
         {order.quantity} × {order.base.name}, {order.sauce.name}, {order.cheese.name}
         {order.vegetables.length > 0 ? `, ${order.vegetables.map((v) => v.name).join(', ')}` : ''}
       </div>
-      <div className="flex-between mt-4">
-        <span className="font-bold">{formatPrice(order.price)}</span>
+      <div className="order-card__footer">
+        <span className="order-card__price">{formatPrice(order.price)}</span>
         {order.status !== 'cancelled' && (
-          <ol className="flex gap-2" aria-label="Status timeline">
+          <ol className="timeline" aria-label="Status timeline">
             {STATUS_FLOW.map((s, i) => (
               <li
                 key={s}
-                className={`step${i <= currentIdx ? ' step--done' : ''}`}
-                style={{ padding: '4px 10px', fontSize: '0.75rem' }}
+                className={`timeline__step${i <= currentIdx ? ' timeline__step--done' : ''}`}
               >
+                <span className="timeline__dot" />
                 {STATUS_LABEL[s]}
+                {i < STATUS_FLOW.length - 1 && <span className="timeline__arrow">→</span>}
               </li>
             ))}
           </ol>
@@ -78,7 +79,6 @@ export function OrdersPage() {
     if (!user) return;
     authSocket({ userId: user.id });
     const off = onOrderStatusChanged((p) => {
-      // Bump tick to trigger refetch
       setTick((t) => t + 1);
       void qc.invalidateQueries({ queryKey: ['orders'] });
       void p;
@@ -92,11 +92,11 @@ export function OrdersPage() {
   const orders = data?.orders ?? [];
 
   return (
-    <div className="stack">
+    <div className="stack--lg">
       <div className="flex-between">
-        <div>
-          <h1 className="text-2xl font-bold">Your orders</h1>
-          <p className="muted">Status updates in real time when an admin moves your order forward.</p>
+        <div className="section-header" style={{ marginBottom: 0 }}>
+          <h1>Your orders</h1>
+          <p>Status updates in real time when an admin moves your order forward.</p>
         </div>
         <Link to="/build"><Button>Build another</Button></Link>
       </div>
