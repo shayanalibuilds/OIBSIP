@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Keep — desk</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main>
+    <p class="mark">Keep</p>
+    <h1>Desk</h1>
+    <p id="welcome">Checking your session…</p>
+    <button id="logout" type="button">Log out</button>
+  </main>
+  <script src="auth.js"></script>
+  <script>
+    const session = KeepAuth.session();
+    if (!session) window.location.replace("index.html");
+    else document.getElementById("welcome").textContent = `Signed in as ${session.email}.`;
+    document.getElementById("logout").addEventListener("click", () => {
+      KeepAuth.logout();
+      window.location.href = "index.html";
+    });
+  </script>
+</body>
+</html>

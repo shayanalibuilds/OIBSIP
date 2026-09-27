@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Keep — register</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main>
+    <p class="mark">Keep</p>
+    <h1>Create an account</h1>
+    <form id="register-form">
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" required />
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" required />
+      <p class="help">Eight characters and one number.</p>
+      <p class="error" id="error" hidden></p>
+      <button type="submit">Create account</button>
+    </form>
+    <p class="alt">Already here? <a href="index.html">Log in</a></p>
+  </main>
+  <script src="auth.js"></script>
+  <script>
+    const form = document.getElementById("register-form");
+    const error = document.getElementById("error");
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const result = await KeepAuth.register(form.email.value.trim(), form.password.value);
+      if (!result.ok) { error.hidden = false; error.textContent = result.message; return; }
+      window.location.href = "dashboard.html";
+    });
+  </script>
+</body>
+</html>
