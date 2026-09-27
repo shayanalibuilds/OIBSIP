@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Oak & Ember</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Public+Sans:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip" href="#top">Skip to content</a>
+    <header class="bar">
+      <a class="word" href="#top">Oak &amp; Ember</a>
+      <button class="menu" type="button" aria-expanded="false" aria-controls="nav">Menu</button>
+      <nav id="nav">
+        <a href="#features">Features</a>
+        <a href="#story">Story</a>
+        <a href="#bench">Bench</a>
+        <a href="#order">Reserve</a>
+      </nav>
+    </header>
+    <main id="top">
+      <section class="hero">
+        <p class="kicker">Desk lamp · first batch</p>
+        <h1>A quiet pool of light.</h1>
+        <p class="lede">Brass, oak, and a linen shade. Built for reading after the house has gone still.</p>
+        <a class="text-link" href="#order">Reserve the Ember Lamp</a>
+        <div class="hero-rule" aria-hidden="true"><span class="wick"></span></div>
+      </section>
+      <section id="features" class="band">
+        <header class="band-head"><p>01</p><h2>On the desk</h2></header>
+        <ul class="rows">
+          <li><h3>Warm</h3><p>2700K behind linen. The page is lit. The rest of the room stays dim.</p></li>
+          <li><h3>Simple</h3><p>A brass wheel with four stops. No app. No pairing. A switch on the cord as well.</p></li>
+          <li><h3>Steady</h3><p>A short arm and a heavy oak base. It does not wander when the desk moves.</p></li>
+        </ul>
+      </section>
+      <section id="story" class="story">
+        <header class="band-head"><p>02</p><h2>From a spare room in Karachi</h2></header>
+        <div class="story-grid">
+          <div>
+            <p>We were tired of lamps that looked finished in a photograph and felt thin at midnight. Oak &amp; Ember is a small run of lamps assembled by hand: turned oak, brushed brass, a shade you can lift off without tools.</p>
+            <p>Fifty pieces in the first batch. Then we stop and review the next cut of wood.</p>
+          </div>
+          <blockquote>It lights the page and leaves the room alone.<cite>Mira S., Lahore</cite></blockquote>
+        </div>
+      </section>
+      <section id="bench" class="band">
+        <header class="band-head"><p>03</p><h2>From the bench</h2></header>
+        <dl class="notes">
+          <div><dt>Finish</dt><dd>Brass will darken. Wipe it dry. Do not polish it raw.</dd></div>
+          <div><dt>Bulb</dt><dd>E14, 4W LED. A spare ships in the box.</dd></div>
+          <div><dt>Cable</dt><dd>Cloth wrap, 1.8 metres, switch on the cord.</dd></div>
+        </dl>
+      </section>
+      <section id="order" class="reserve">
+        <p>Next crate leaves in four weeks.</p>
+        <h2>Reserve an Ember Lamp</h2>
+        <a class="text-link invert" href="mailto:hello@oakandember.example">hello@oakandember.example</a>
+      </section>
+    </main>
+    <footer>
+      <div><p>Oak &amp; Ember</p><p>Karachi</p></div>
+      <div>
+        <a href="mailto:hello@oakandember.example">Email</a>
+        <a href="#">Instagram</a>
+        <a href="#">Pinterest</a>
+      </div>
+    </footer>
+    <script>
+      const menu = document.querySelector(".menu");
+      const nav = document.getElementById("nav");
+      menu.addEventListener("click", () => {
+        const open = nav.classList.toggle("open");
+        menu.setAttribute("aria-expanded", String(open));
+      });
+    </script>
+  </body>
+</html>
