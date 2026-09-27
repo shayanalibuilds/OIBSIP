@@ -40,9 +40,10 @@ export function RegisterPage() {
   };
 
   return (
-    <div className="card" style={{ maxWidth: 480, margin: '0 auto' }}>
-      <h1 className="text-2xl font-bold mb-4">Create your account</h1>
-      {formErr && <Alert variant="error">{formErr}</Alert>}
+    <div className="card form-card">
+      <h1>Create your account</h1>
+      <p className="form-card__subtitle">Start building custom pizzas in minutes.</p>
+      {formErr && <Alert variant="error"><span className="alert__icon">⚠</span><span>{formErr}</span></Alert>}
       <form onSubmit={onSubmit} noValidate>
         <Field
           label="Name"
@@ -74,9 +75,9 @@ export function RegisterPage() {
           error={errs.password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <Button type="submit" loading={loading} className="mt-2">Create account</Button>
+        <Button type="submit" loading={loading} className="btn--full mt-2">Create account</Button>
       </form>
-      <div className="mt-4 text-sm muted">
+      <div className="form-links">
         Already have an account? <Link to="/login">Sign in</Link>
       </div>
     </div>

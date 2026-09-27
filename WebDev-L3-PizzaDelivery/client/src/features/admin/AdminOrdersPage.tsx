@@ -109,13 +109,13 @@ export function AdminOrdersPage() {
   const done = orders.filter((o) => o.status === 'delivered' || o.status === 'cancelled');
 
   return (
-    <div className="stack">
-      <div>
-        <h1 className="text-2xl font-bold">Orders board</h1>
-        <p className="muted">Customer-side status updates fire automatically when you change a status.</p>
+    <div className="stack--lg">
+      <div className="section-header" style={{ marginBottom: 0 }}>
+        <h1>Orders board</h1>
+        <p>Customer-side status updates fire automatically when you change a status.</p>
       </div>
       <section>
-        <h2 className="text-lg font-semibold mb-3">Active ({active.length})</h2>
+        <h2 style={{ fontSize: '1.25rem', marginBottom: 'var(--space-4)' }}>Active ({active.length})</h2>
         {active.length === 0 ? (
           <EmptyState title="No active orders" />
         ) : (
@@ -123,7 +123,7 @@ export function AdminOrdersPage() {
         )}
       </section>
       <section>
-        <h2 className="text-lg font-semibold mb-3">Completed ({done.length})</h2>
+        <h2 style={{ fontSize: '1.25rem', marginBottom: 'var(--space-4)' }}>Completed ({done.length})</h2>
         {done.length === 0 ? (
           <EmptyState title="No completed orders yet" />
         ) : (

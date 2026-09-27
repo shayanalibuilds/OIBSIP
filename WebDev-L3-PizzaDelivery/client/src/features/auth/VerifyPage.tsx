@@ -28,13 +28,13 @@ export function VerifyPage() {
   };
 
   return (
-    <div className="card" style={{ maxWidth: 480, margin: '0 auto' }}>
-      <h1 className="text-2xl font-bold mb-4">Verify your email</h1>
-      <p className="muted mb-4">
+    <div className="card form-card">
+      <h1>Verify your email</h1>
+      <p className="form-card__subtitle">
         Paste the token from your verification email. In dev with no SMTP configured, the server logs an
         Ethereal preview URL you can open to read the email.
       </p>
-      {err && <Alert variant="error">{err}</Alert>}
+      {err && <Alert variant="error"><span className="alert__icon">⚠</span><span>{err}</span></Alert>}
       <form onSubmit={onSubmit} noValidate>
         <Field
           label="Email"
@@ -51,9 +51,9 @@ export function VerifyPage() {
           value={token}
           onChange={(e) => setToken(e.target.value)}
         />
-        <Button type="submit" loading={loading} className="mt-2">Verify</Button>
+        <Button type="submit" loading={loading} className="btn--full mt-2">Verify</Button>
       </form>
-      <div className="mt-4 text-sm muted">
+      <div className="form-links">
         <Link to="/login">Back to sign in</Link>
       </div>
     </div>

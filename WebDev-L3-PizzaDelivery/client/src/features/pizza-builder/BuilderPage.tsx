@@ -30,25 +30,19 @@ function ItemCard({
       type="button"
       onClick={onToggle}
       aria-pressed={selected}
-      className="card"
-      style={{
-        textAlign: 'left',
-        cursor: 'pointer',
-        border: selected ? '2px solid var(--color-primary)' : '1px solid var(--color-border)',
-        background: selected ? 'var(--color-primary-soft)' : 'var(--color-surface)',
-      }}
+      className="builder-card"
     >
       <div className="flex-between">
-        <h3 className="font-semibold">{item.name}</h3>
-        {selected && <span aria-hidden="true">✓</span>}
+        <span className="builder-card__name">{item.name}</span>
+        {selected && <span className="builder-card__check" aria-hidden="true">✓</span>}
       </div>
-      <div className="muted text-sm">{item.slug}</div>
-      <div className="flex-between mt-4">
-        <span className="font-bold">{formatPrice(item.price)}</span>
+      <div className="builder-card__slug">{item.slug}</div>
+      <div className="builder-card__footer">
+        <span className="builder-card__price">{formatPrice(item.price)}</span>
         {item.stock <= item.lowStockThreshold ? (
           <span className="badge badge--low">Low stock</span>
         ) : (
-          <span className="muted text-sm">{multi ? 'pick many' : 'pick one'}</span>
+          <span className="text-sm subtle">{multi ? 'pick many' : 'pick one'}</span>
         )}
       </div>
     </button>
@@ -125,10 +119,10 @@ export function BuilderPage() {
   };
 
   return (
-    <div className="stack">
-      <div>
-        <h1 className="text-2xl font-bold mb-2">Build your pizza</h1>
-        <p className="muted">Four steps. Server prices your pizza — never trust client totals.</p>
+    <div className="stack--lg">
+      <div className="section-header">
+        <h1>Build your pizza</h1>
+        <p>Four steps. The server prices your pizza — never trust client totals.</p>
       </div>
 
       <ol className="steps" aria-label="Builder steps">
@@ -145,7 +139,7 @@ export function BuilderPage() {
 
       {step === 0 && (
         <section aria-label="Choose a base">
-          <h2 className="text-xl font-semibold mb-3">Pick your base</h2>
+          <h2 style={{ fontSize: '1.375rem', marginBottom: 'var(--space-4)' }}>Pick your base</h2>
           <div className="grid grid--catalog">
             {items.filter((i) => i.category === 'base').map((it) => (
               <ItemCard key={it.id} item={it} selected={baseId === it.id} onToggle={() => setBaseId(it.id)} />
@@ -156,7 +150,7 @@ export function BuilderPage() {
 
       {step === 1 && (
         <section aria-label="Choose a sauce">
-          <h2 className="text-xl font-semibold mb-3">Pick your sauce</h2>
+          <h2 style={{ fontSize: '1.375rem', marginBottom: 'var(--space-4)' }}>Pick your sauce</h2>
           <div className="grid grid--catalog">
             {items.filter((i) => i.category === 'sauce').map((it) => (
               <ItemCard key={it.id} item={it} selected={sauceId === it.id} onToggle={() => setSauceId(it.id)} />
@@ -167,7 +161,7 @@ export function BuilderPage() {
 
       {step === 2 && (
         <section aria-label="Choose a cheese">
-          <h2 className="text-xl font-semibold mb-3">Pick your cheese</h2>
+          <h2 style={{ fontSize: '1.375rem', marginBottom: 'var(--space-4)' }}>Pick your cheese</h2>
           <div className="grid grid--catalog">
             {items.filter((i) => i.category === 'cheese').map((it) => (
               <ItemCard key={it.id} item={it} selected={cheeseId === it.id} onToggle={() => setCheeseId(it.id)} />
@@ -178,7 +172,7 @@ export function BuilderPage() {
 
       {step === 3 && (
         <section aria-label="Choose vegetables">
-          <h2 className="text-xl font-semibold mb-3">Pick your vegetables (up to 8)</h2>
+          <h2 style={{ fontSize: '1.375rem', marginBottom: 'var(--space-4)' }}>Pick your vegetables (up to 8)</h2>
           <div className="grid grid--catalog">
             {items.filter((i) => i.category === 'vegetable').map((it) => (
               <ItemCard
@@ -195,26 +189,26 @@ export function BuilderPage() {
 
       {step === 4 && (
         <section aria-label="Order summary">
-          <h2 className="text-xl font-semibold mb-3">Summary</h2>
-          <div className="card">
-            <div className="flex-between mb-2">
-              <span>Base</span>
-              <span>{base?.name ?? '—'} {base ? `(${formatPrice(base.price)})` : ''}</span>
+          <h2 style={{ fontSize: '1.375rem', marginBottom: 'var(--space-4)' }}>Summary</h2>
+          <div className="card" style={{ maxWidth: 480 }}>
+            <div className="detail-row">
+              <span className="detail-row__label">Base</span>
+              <span className="detail-row__value">{base?.name ?? '—'} {base ? `· ${formatPrice(base.price)}` : ''}</span>
             </div>
-            <div className="flex-between mb-2">
-              <span>Sauce</span>
-              <span>{sauce?.name ?? '—'} {sauce ? `(${formatPrice(sauce.price)})` : ''}</span>
+            <div className="detail-row">
+              <span className="detail-row__label">Sauce</span>
+              <span className="detail-row__value">{sauce?.name ?? '—'} {sauce ? `· ${formatPrice(sauce.price)}` : ''}</span>
             </div>
-            <div className="flex-between mb-2">
-              <span>Cheese</span>
-              <span>{cheese?.name ?? '—'} {cheese ? `(${formatPrice(cheese.price)})` : ''}</span>
+            <div className="detail-row">
+              <span className="detail-row__label">Cheese</span>
+              <span className="detail-row__value">{cheese?.name ?? '—'} {cheese ? `· ${formatPrice(cheese.price)}` : ''}</span>
             </div>
-            <div className="flex-between mb-2">
-              <span>Vegetables ({vegs.length})</span>
-              <span>{vegs.map((v) => v.name).join(', ') || '—'}</span>
+            <div className="detail-row">
+              <span className="detail-row__label">Vegetables ({vegs.length})</span>
+              <span className="detail-row__value">{vegs.map((v) => v.name).join(', ') || '—'}</span>
             </div>
-            <div className="flex-between mb-4">
-              <label htmlFor="qty">Quantity</label>
+            <div className="detail-row">
+              <label htmlFor="qty" style={{ textTransform: 'none', letterSpacing: '0', marginBottom: 0 }}>Quantity</label>
               <input
                 id="qty"
                 type="number"
@@ -225,10 +219,9 @@ export function BuilderPage() {
                 style={{ width: 80 }}
               />
             </div>
-            <hr style={{ border: 'none', borderTop: '1px solid var(--color-border)' }} />
-            <div className="flex-between mt-4">
-              <span className="font-semibold">Total (server-confirmed at checkout)</span>
-              <span className="font-bold text-lg">{formatPrice(totalPriceMinor / 100)}</span>
+            <div className="detail-row detail-row--total">
+              <span className="detail-row__label">Total (server-confirmed at checkout)</span>
+              <span className="detail-row__value">{formatPrice(totalPriceMinor / 100)}</span>
             </div>
           </div>
         </section>

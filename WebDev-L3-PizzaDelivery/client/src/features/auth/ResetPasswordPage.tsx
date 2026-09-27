@@ -41,9 +41,10 @@ export function ResetPasswordPage() {
   };
 
   return (
-    <div className="card" style={{ maxWidth: 480, margin: '0 auto' }}>
-      <h1 className="text-2xl font-bold mb-4">Reset password</h1>
-      {formErr && <Alert variant="error">{formErr}</Alert>}
+    <div className="card form-card">
+      <h1>Reset password</h1>
+      <p className="form-card__subtitle">Enter the token from your reset email and choose a new password.</p>
+      {formErr && <Alert variant="error"><span className="alert__icon">⚠</span><span>{formErr}</span></Alert>}
       <form onSubmit={onSubmit} noValidate>
         <Field
           label="Email"
@@ -73,9 +74,9 @@ export function ResetPasswordPage() {
           error={errs.password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <Button type="submit" loading={loading} className="mt-2">Update password</Button>
+        <Button type="submit" loading={loading} className="btn--full mt-2">Update password</Button>
       </form>
-      <div className="mt-4 text-sm muted">
+      <div className="form-links">
         <Link to="/login">Back to sign in</Link>
       </div>
     </div>

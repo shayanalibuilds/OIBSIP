@@ -112,17 +112,18 @@ export function AdminInventoryPage() {
   const lowCount = items.filter((i) => i.isLow).length;
 
   return (
-    <div className="stack">
-      <div className="flex-between">
-        <div>
-          <h1 className="text-2xl font-bold">Inventory</h1>
-          <p className="muted">{items.length} items · {lowCount} low</p>
-        </div>
+    <div className="stack--lg">
+      <div className="section-header" style={{ marginBottom: 0 }}>
+        <h1>Inventory</h1>
+        <p>{items.length} items · {lowCount} low</p>
       </div>
       {lowCount > 0 && (
-        <Alert variant="info">{lowCount} item(s) are at or below their low-stock threshold. A cron email runs every 15 minutes.</Alert>
+        <Alert variant="info">
+          <span className="alert__icon">ℹ</span>
+          <span>{lowCount} item(s) are at or below their low-stock threshold. A cron email runs every 15 minutes.</span>
+        </Alert>
       )}
-      <div className="card" style={{ padding: 0, overflowX: 'auto' }}>
+      <div className="table-wrap">
         <table className="table">
           <thead>
             <tr>

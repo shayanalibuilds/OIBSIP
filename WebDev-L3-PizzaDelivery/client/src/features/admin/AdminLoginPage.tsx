@@ -29,9 +29,10 @@ export function AdminLoginPage() {
   };
 
   return (
-    <div className="card" style={{ maxWidth: 440, margin: '0 auto' }}>
-      <h1 className="text-2xl font-bold mb-4">Admin sign in</h1>
-      {err && <Alert variant="error">{err}</Alert>}
+    <div className="card form-card">
+      <h1>Admin sign in</h1>
+      <p className="form-card__subtitle">Manage inventory and the live order board.</p>
+      {err && <Alert variant="error"><span className="alert__icon">⚠</span><span>{err}</span></Alert>}
       <form onSubmit={onSubmit} noValidate>
         <Field
           label="Email"
@@ -50,9 +51,9 @@ export function AdminLoginPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <Button type="submit" loading={loading} className="mt-2">Sign in</Button>
+        <Button type="submit" loading={loading} className="btn--full mt-2">Sign in</Button>
       </form>
-      <div className="mt-4 text-sm muted">
+      <div className="form-links">
         <Link to="/login">Customer sign in</Link>
       </div>
     </div>
