@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
@@ -57,6 +57,7 @@ export function CheckoutPage() {
   const navigate = useNavigate();
   const [err, setErr] = useState<string | null>(null);
   const [order, setOrder] = useState<OrderPublic | null>(null);
+  const createdRef = useRef(false);
 
   const baseId = params.get('baseId') ?? '';
   const sauceId = params.get('sauceId') ?? '';
@@ -72,13 +73,22 @@ export function CheckoutPage() {
   const createOrder = useMutation({
     mutationFn: () =>
       apiOrders.create({ baseId, sauceId, cheeseId, vegetableIds: vegIds, quantity }),
-    onSuccess: (data) => setOrder(data.order),
-    onError: (e) => setErr(e instanceof ApiError ? e.message : 'Could not create order'),
+    onSuccess: (data) => {
+      if (data?.order) {
+        setOrder(data.order);
+      } else {
+        setErr('Server returned an unexpected response. Please retry.');
+      }
+    },
+    onError: (e) => {
+      const msg = e instanceof ApiError ? e.message : e instanceof Error ? e.message : 'Could not create order';
+      setErr(msg);
+    },
   });
 
   const payWithRazorpay = useMutation({
     mutationFn: async () => {
-      if (!order) throw new Error('No order');
+      if (!order) throw new Error('No order to pay');
       const created = await apiPayments.createRazorpayOrder(order.id);
       await loadRazorpayScript();
       return created;
@@ -117,18 +127,30 @@ export function CheckoutPage() {
   });
 
   const payWithDevMock = useMutation({
-    mutationFn: () => (order ? apiPayments.devMock(order.id) : Promise.reject(new Error('No order'))),
+    mutationFn: () => {
+      if (!order) return Promise.reject(new Error('No order to pay'));
+      return apiPayments.devMock(order.id);
+    },
     onSuccess: () => navigate('/orders'),
     onError: (e) => setErr(e instanceof ApiError ? e.message : 'Dev mock failed'),
   });
 
-  // Auto-create the order when the page loads.
+  // Auto-create the order ONCE, after the catalog loads and params are validated.
+  // Uses a ref to prevent double-fire in React StrictMode.
   useEffect(() => {
-    if (!order && !createOrder.isPending) {
-      createOrder.mutate();
-    }
+    if (createdRef.current) return;
+    if (isLoading || !catalog) return;
+    if (!baseId || !sauceId || !cheeseId) return;
+    createdRef.current = true;
+    createOrder.mutate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isLoading, catalog, baseId, sauceId, cheeseId]);
+
+  const handleRetry = () => {
+    setErr(null);
+    createdRef.current = true;
+    createOrder.mutate();
+  };
 
   if (isLoading) return <LoadingState label="Loading ingredients…" />;
   if (!catalog) return <EmptyState title="Could not load catalog" />;
@@ -147,8 +169,12 @@ export function CheckoutPage() {
   const sauce = byId(sauceId);
   const cheese = byId(cheeseId);
   const vegs = vegIds.map(byId).filter(Boolean);
-  const unit = (base?.price ?? 0) + (sauce?.price ?? 0) + (cheese?.price ?? 0) +
+  const unit =
+    (base?.price ?? 0) + (sauce?.price ?? 0) + (cheese?.price ?? 0) +
     vegs.reduce((s, v) => s + (v?.price ?? 0), 0);
+
+  const orderCreating = createOrder.isPending;
+  const orderFailed = createOrder.isError && !order;
 
   return (
     <div className="stack">
@@ -158,8 +184,17 @@ export function CheckoutPage() {
       </div>
 
       {err && <Alert variant="error">{err}</Alert>}
-      {createOrder.isError && (
-        <Alert variant="error">Could not create order: {(createOrder.error as Error).message}</Alert>
+      {orderFailed && (
+        <Alert variant="error">
+          Could not create order: {err ?? 'Unknown error'}.{' '}
+          <button
+            type="button"
+            onClick={handleRetry}
+            style={{ background: 'none', border: 'none', color: 'inherit', textDecoration: 'underline', cursor: 'pointer', display: 'inline', padding: 0, font: 'inherit' }}
+          >
+            Retry
+          </button>
+        </Alert>
       )}
 
       <div className="card">
@@ -181,6 +216,11 @@ export function CheckoutPage() {
             <span className={`badge badge--${order.paymentStatus}`}>{order.paymentStatus}</span>)
           </div>
         )}
+        {orderCreating && (
+          <div className="muted text-sm mt-2">
+            <span className="spinner" aria-hidden="true" /> Creating your order…
+          </div>
+        )}
       </div>
 
       <div className="card">
@@ -195,10 +235,14 @@ export function CheckoutPage() {
           <Alert variant="error">Razorpay key missing and dev mock is disabled outside development.</Alert>
         )}
         <div className="flex flex-wrap mt-4">
-          {RAZORPAY_KEY ? (
+          {orderFailed ? (
+            <Button variant="secondary" onClick={handleRetry} loading={orderCreating}>
+              Retry order creation
+            </Button>
+          ) : RAZORPAY_KEY ? (
             <Button
               onClick={() => payWithRazorpay.mutate()}
-              loading={payWithRazorpay.isPending || createOrder.isPending || !order}
+              loading={payWithRazorpay.isPending || orderCreating || !order}
               disabled={!order}
             >
               Pay {order ? formatPrice(order.price) : ''}
@@ -206,10 +250,10 @@ export function CheckoutPage() {
           ) : IS_DEV ? (
             <Button
               onClick={() => payWithDevMock.mutate()}
-              loading={payWithDevMock.isPending || createOrder.isPending || !order}
+              loading={payWithDevMock.isPending || orderCreating || !order}
               disabled={!order}
             >
-              Pay (dev mock)
+              {orderCreating ? 'Creating order…' : `Pay (dev mock)${order ? ' ' + formatPrice(order.price) : ''}`}
             </Button>
           ) : null}
           <Button variant="ghost" onClick={() => navigate('/build')}>Back to builder</Button>
