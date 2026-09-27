@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sum</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="top">
+        <p class="name">Sum</p>
+        <p class="hint">Type or click. The sum stays in view.</p>
+      </header>
+
+      <section class="screen" aria-label="Calculator display">
+        <p id="tape" class="tape"></p>
+        <output id="display" class="value">0</output>
+      </section>
+
+      <div class="keys" id="keys">
+        <button type="button" class="ghost" data-action="clear">C</button>
+        <button type="button" class="ghost" data-action="delete">Del</button>
+        <button type="button" class="op" data-operator="÷" aria-label="Divide">÷</button>
+        <button type="button" class="op" data-operator="×" aria-label="Multiply">×</button>
+
+        <button type="button" data-digit="7">7</button>
+        <button type="button" data-digit="8">8</button>
+        <button type="button" data-digit="9">9</button>
+        <button type="button" class="op" data-operator="−" aria-label="Subtract">−</button>
+
+        <button type="button" data-digit="4">4</button>
+        <button type="button" data-digit="5">5</button>
+        <button type="button" data-digit="6">6</button>
+        <button type="button" class="op" data-operator="+" aria-label="Add">+</button>
+
+        <button type="button" data-digit="1">1</button>
+        <button type="button" data-digit="2">2</button>
+        <button type="button" data-digit="3">3</button>
+        <button type="button" class="eq" data-action="equals">=</button>
+
+        <button type="button" class="span-2" data-digit="0">0</button>
+        <button type="button" data-digit=".">.</button>
+      </div>
+    </main>
+    <script src="script.js"></script>
+  </body>
+</html>

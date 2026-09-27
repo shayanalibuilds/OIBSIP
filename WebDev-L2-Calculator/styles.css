@@ -1,0 +1,144 @@
+:root {
+  --paper: #efeee9;
+  --ink: #171614;
+  --muted: #7a776f;
+  --line: #d8d4cb;
+  --key: #f7f6f2;
+  --key-press: #e7e4dc;
+  --op: #2a2926;
+  --op-on: #c45a1a;
+  --eq: #171614;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  display: grid;
+  place-items: center;
+  padding: 2rem 1rem;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+}
+
+.shell {
+  width: min(22rem, 100%);
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 1.25rem;
+}
+
+.name {
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.screen {
+  border-bottom: 1px solid var(--ink);
+  padding: 0.4rem 0 0.9rem;
+  margin-bottom: 1rem;
+  min-height: 5.4rem;
+}
+
+.tape {
+  min-height: 1.2rem;
+  color: var(--muted);
+  font-size: 0.92rem;
+  letter-spacing: 0.02em;
+}
+
+.value {
+  display: block;
+  width: 100%;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(2.2rem, 8vw, 3rem);
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+}
+
+.keys {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.4rem;
+}
+
+button {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: var(--key);
+  color: var(--ink);
+  min-height: 3.35rem;
+  font: inherit;
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+}
+
+button:hover {
+  background: #fff;
+}
+
+button:active {
+  transform: translateY(1px);
+  background: var(--key-press);
+}
+
+button:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.ghost {
+  color: var(--muted);
+}
+
+.op {
+  background: var(--op);
+  border-color: var(--op);
+  color: #f4f1ea;
+}
+
+.op.is-on {
+  background: var(--op-on);
+  border-color: var(--op-on);
+  color: #fff;
+}
+
+.eq {
+  grid-row: span 2;
+  background: var(--eq);
+  border-color: var(--eq);
+  color: #f4f1ea;
+}
+
+.span-2 {
+  grid-column: span 2;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button {
+    transition: none;
+  }
+}
