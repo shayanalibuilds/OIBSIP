@@ -21,8 +21,11 @@ export function ResetPasswordPage() {
     const newErrs: Record<string, string> = {};
     if (!email.trim()) newErrs.email = 'Email is required';
     if (!token.trim()) newErrs.token = 'Token is required';
-    if (password.length < 8) newErrs.password = 'At least 8 characters';
-    if (!/[0-9]/.test(password)) newErrs.password = 'Must contain a number';
+    if (password.length < 8) {
+      newErrs.password = 'At least 8 characters';
+    } else if (!/[0-9]/.test(password)) {
+      newErrs.password = 'Must contain a number';
+    }
     setErrs(newErrs);
     if (Object.keys(newErrs).length > 0) return;
 

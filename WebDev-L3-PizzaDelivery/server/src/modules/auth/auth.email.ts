@@ -50,6 +50,11 @@ export async function sendMail(opts: {
   } else {
     logger.info('Email sent', { messageId: info.messageId, to: opts.to });
   }
+  // In development, log the plain-text body so the verify/reset link is visible
+  // without having to open the Ethereal preview. This is intentionally dev-only.
+  if (env.NODE_ENV === 'development') {
+    logger.info('Email body', { to: opts.to, subject: opts.subject, text: opts.text });
+  }
   return { previewUrl };
 }
 
