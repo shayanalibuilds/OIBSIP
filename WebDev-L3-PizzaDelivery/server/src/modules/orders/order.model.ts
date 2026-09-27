@@ -69,7 +69,15 @@ const schema = new mongoose.Schema<OrderDoc>(
 export const OrderModel = mongoose.models.Order ?? mongoose.model<OrderDoc>('Order', schema);
 
 function asDoc(r: unknown): OrderDoc {
-  const o = r as OrderDoc;
+  // `OrderModel.create()` returns a full Mongoose Document whose schema paths
+  // live on prototype getters, not own enumerable props — spreading it directly
+  // would drop every field (base/sauce/cheese become undefined). Convert to a
+  // plain object first when one is available (lean() results pass through).
+  const raw =
+    typeof (r as { toObject?: unknown } | null)?.toObject === 'function'
+      ? (r as { toObject: () => unknown }).toObject()
+      : r;
+  const o = raw as OrderDoc;
   return {
     ...o,
     _id: String(o._id),
