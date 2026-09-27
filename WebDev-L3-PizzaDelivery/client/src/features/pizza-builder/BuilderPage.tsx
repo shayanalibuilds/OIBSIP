@@ -2,13 +2,19 @@ import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { apiCatalog, type CatalogItem } from '../../shared/lib/api';
-import { Button } from '../../shared/ui/Button';
-import { Alert } from '../../shared/ui/Alert';
+import { ArrowLeft, ArrowRight, Check, CheckCircle2 } from 'lucide-react';
 import { LoadingState, EmptyState } from '../../shared/ui/States';
 
 type Step = 0 | 1 | 2 | 3 | 4;
 
 const STEP_LABELS = ['Base', 'Sauce', 'Cheese', 'Vegetables', 'Summary'];
+const STEP_HINTS = [
+  'Choose 1 of 5 crust foundations',
+  'Choose 1 of 5 signature sauces',
+  'Choose 1 of 4 artisan cheeses',
+  'Pick up to 8 garden vegetables',
+  'Review and proceed to checkout',
+];
 
 function formatPrice(p: number) {
   return `₹${p.toFixed(2)}`;
@@ -30,20 +36,28 @@ function ItemCard({
       type="button"
       onClick={onToggle}
       aria-pressed={selected}
-      className="builder-card"
+      className={`option-card-btn${selected ? ' selected' : ''}`}
     >
-      <div className="flex-between">
-        <span className="builder-card__name">{item.name}</span>
-        {selected && <span className="builder-card__check" aria-hidden="true">✓</span>}
+      <div className="card-top">
+        <div>
+          <h3 className="card-title">{item.name}</h3>
+          <p className="card-slug">{item.slug}</p>
+        </div>
+        <div className="check-indicator" aria-hidden="true">
+          <Check size={14} strokeWidth={3} />
+        </div>
       </div>
-      <div className="builder-card__slug">{item.slug}</div>
-      <div className="builder-card__footer">
-        <span className="builder-card__price">{formatPrice(item.price)}</span>
-        {item.stock <= item.lowStockThreshold ? (
-          <span className="badge badge--low">Low stock</span>
-        ) : (
-          <span className="text-sm subtle">{multi ? 'pick many' : 'pick one'}</span>
-        )}
+      <div className="card-bot">
+        <span className="card-price">{formatPrice(item.price)}</span>
+        <span className="pick-hint">
+          {selected ? (
+            <><CheckCircle2 size={14} /> Selected</>
+          ) : multi ? (
+            'pick many'
+          ) : (
+            'pick one'
+          )}
+        </span>
       </div>
     </button>
   );
@@ -62,7 +76,6 @@ export function BuilderPage() {
   const [cheeseId, setCheeseId] = useState<string | null>(null);
   const [vegIds, setVegIds] = useState<string[]>([]);
   const [quantity, setQuantity] = useState(1);
-  const [submitErr, setSubmitErr] = useState<string | null>(null);
 
   const items = useMemo(() => data?.items ?? [], [data]);
 
@@ -103,11 +116,7 @@ export function BuilderPage() {
   };
 
   const handleCheckout = () => {
-    if (!base || !sauce || !cheese) {
-      setSubmitErr('Pick a base, sauce, and cheese first.');
-      return;
-    }
-    setSubmitErr(null);
+    if (!base || !sauce || !cheese) return;
     const params = new URLSearchParams({
       baseId: base.id,
       sauceId: sauce.id,
@@ -119,124 +128,115 @@ export function BuilderPage() {
   };
 
   return (
-    <div className="stack--lg">
-      <div className="section-header">
-        <h1>Build your pizza</h1>
-        <p>Four steps. The server prices your pizza — never trust client totals.</p>
-      </div>
+    <main style={{ maxWidth: 900, width: '100%', margin: '40px auto 60px', padding: '0 24px', flex: 1 }}>
+      <header style={{ marginBottom: 32 }}>
+        <h1 className="page-title">Build your pizza</h1>
+        <p className="page-subtitle">Four steps. Server prices your pizza — never trust client totals.</p>
+      </header>
 
-      <ol className="steps" aria-label="Builder steps">
+      {/* Step Indicator */}
+      <nav className="step-indicator" aria-label="Pizza builder steps">
         {STEP_LABELS.map((label, i) => (
-          <li
-            key={label}
-            className={`step${i === step ? ' step--active' : i < step ? ' step--done' : ''}`}
-          >
-            <span className="step__num">{i < step ? '✓' : i + 1}</span>
-            {label}
-          </li>
+          <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 12, flex: i === 4 ? '0 0 auto' : '1' }}>
+            <div className={`step-pill${i === step ? ' active' : i < step ? ' done' : ''}`}>
+              <span className="num-circle">{i < step ? '✓' : i + 1}</span>
+              <span>{label}</span>
+            </div>
+            {i < 4 && <div className="step-divider"></div>}
+          </div>
         ))}
-      </ol>
+      </nav>
 
-      {step === 0 && (
-        <section aria-label="Choose a base">
-          <h2 style={{ fontSize: '1.375rem', marginBottom: 'var(--space-4)' }}>Pick your base</h2>
-          <div className="grid grid--catalog">
-            {items.filter((i) => i.category === 'base').map((it) => (
-              <ItemCard key={it.id} item={it} selected={baseId === it.id} onToggle={() => setBaseId(it.id)} />
-            ))}
-          </div>
-        </section>
-      )}
+      {/* Step Content */}
+      <section className="step-card-box" aria-labelledby="step-title">
+        <div className="step-heading">
+          <h2 id="step-title">
+            {step === 0 && 'Pick your base'}
+            {step === 1 && 'Pick your sauce'}
+            {step === 2 && 'Pick your cheese'}
+            {step === 3 && 'Pick your vegetables'}
+            {step === 4 && 'Summary'}
+          </h2>
+          <span className="step-hint-badge">{STEP_HINTS[step]}</span>
+        </div>
 
-      {step === 1 && (
-        <section aria-label="Choose a sauce">
-          <h2 style={{ fontSize: '1.375rem', marginBottom: 'var(--space-4)' }}>Pick your sauce</h2>
-          <div className="grid grid--catalog">
-            {items.filter((i) => i.category === 'sauce').map((it) => (
-              <ItemCard key={it.id} item={it} selected={sauceId === it.id} onToggle={() => setSauceId(it.id)} />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {step === 2 && (
-        <section aria-label="Choose a cheese">
-          <h2 style={{ fontSize: '1.375rem', marginBottom: 'var(--space-4)' }}>Pick your cheese</h2>
-          <div className="grid grid--catalog">
-            {items.filter((i) => i.category === 'cheese').map((it) => (
-              <ItemCard key={it.id} item={it} selected={cheeseId === it.id} onToggle={() => setCheeseId(it.id)} />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {step === 3 && (
-        <section aria-label="Choose vegetables">
-          <h2 style={{ fontSize: '1.375rem', marginBottom: 'var(--space-4)' }}>Pick your vegetables (up to 8)</h2>
-          <div className="grid grid--catalog">
-            {items.filter((i) => i.category === 'vegetable').map((it) => (
+        {step < 4 && (
+          <div className="option-grid" role="radiogroup">
+            {items.filter((i) => i.category === ['base', 'sauce', 'cheese', 'vegetable'][step]).map((it) => (
               <ItemCard
                 key={it.id}
                 item={it}
-                multi
-                selected={vegIds.includes(it.id)}
-                onToggle={() => toggleVeg(it.id)}
+                multi={step === 3}
+                selected={
+                  step === 0 ? baseId === it.id :
+                  step === 1 ? sauceId === it.id :
+                  step === 2 ? cheeseId === it.id :
+                  vegIds.includes(it.id)
+                }
+                onToggle={() => {
+                  if (step === 0) setBaseId(it.id);
+                  else if (step === 1) setSauceId(it.id);
+                  else if (step === 2) setCheeseId(it.id);
+                  else toggleVeg(it.id);
+                }}
               />
             ))}
           </div>
-        </section>
-      )}
+        )}
 
-      {step === 4 && (
-        <section aria-label="Order summary">
-          <h2 style={{ fontSize: '1.375rem', marginBottom: 'var(--space-4)' }}>Summary</h2>
-          <div className="card" style={{ maxWidth: 480 }}>
-            <div className="detail-row">
-              <span className="detail-row__label">Base</span>
-              <span className="detail-row__value">{base?.name ?? '—'} {base ? `· ${formatPrice(base.price)}` : ''}</span>
+        {step === 4 && (
+          <div style={{ maxWidth: 480 }}>
+            <div className="order-row">
+              <span className="order-label">Base</span>
+              <span className="order-value">{base?.name ?? '—'} {base ? `· ${formatPrice(base.price)}` : ''}</span>
             </div>
-            <div className="detail-row">
-              <span className="detail-row__label">Sauce</span>
-              <span className="detail-row__value">{sauce?.name ?? '—'} {sauce ? `· ${formatPrice(sauce.price)}` : ''}</span>
+            <div className="order-row">
+              <span className="order-label">Sauce</span>
+              <span className="order-value">{sauce?.name ?? '—'} {sauce ? `· ${formatPrice(sauce.price)}` : ''}</span>
             </div>
-            <div className="detail-row">
-              <span className="detail-row__label">Cheese</span>
-              <span className="detail-row__value">{cheese?.name ?? '—'} {cheese ? `· ${formatPrice(cheese.price)}` : ''}</span>
+            <div className="order-row">
+              <span className="order-label">Cheese</span>
+              <span className="order-value">{cheese?.name ?? '—'} {cheese ? `· ${formatPrice(cheese.price)}` : ''}</span>
             </div>
-            <div className="detail-row">
-              <span className="detail-row__label">Vegetables ({vegs.length})</span>
-              <span className="detail-row__value">{vegs.map((v) => v.name).join(', ') || '—'}</span>
+            <div className="order-row">
+              <span className="order-label">Vegetables ({vegs.length})</span>
+              <span className="order-value">{vegs.map((v) => v.name).join(', ') || '—'}</span>
             </div>
-            <div className="detail-row">
-              <label htmlFor="qty" style={{ textTransform: 'none', letterSpacing: '0', marginBottom: 0 }}>Quantity</label>
+            <div className="order-row">
+              <span className="order-label">Quantity</span>
               <input
-                id="qty"
-                type="number"
-                min={1}
-                max={20}
-                value={quantity}
+                type="number" min={1} max={20} value={quantity}
                 onChange={(e) => setQuantity(Math.max(1, Math.min(20, Number(e.target.value) || 1)))}
                 style={{ width: 80 }}
               />
             </div>
-            <div className="detail-row detail-row--total">
-              <span className="detail-row__label">Total (server-confirmed at checkout)</span>
-              <span className="detail-row__value">{formatPrice(totalPriceMinor / 100)}</span>
+            <hr className="divider" />
+            <div className="total-row">
+              <span className="total-label">Total (server-confirmed at checkout)</span>
+              <span className="total-value">{formatPrice(totalPriceMinor / 100)}</span>
             </div>
           </div>
-        </section>
-      )}
-
-      {submitErr && <Alert variant="error">{submitErr}</Alert>}
-
-      <div className="flex-between">
-        <Button variant="ghost" onClick={back} disabled={step === 0}>Back</Button>
-        {step < 4 ? (
-          <Button onClick={next} disabled={!canNext}>Next</Button>
-        ) : (
-          <Button onClick={handleCheckout}>Proceed to checkout</Button>
         )}
-      </div>
-    </div>
+      </section>
+
+      {/* Bottom Navigation */}
+      <footer className="builder-bottom-nav">
+        <button type="button" className="btn btn--ghost" onClick={back} disabled={step === 0}>
+          <ArrowLeft size={16} />
+          <span>Back</span>
+        </button>
+        {step < 4 ? (
+          <button type="button" className="btn btn--primary" onClick={next} disabled={!canNext}>
+            <span>Next: {STEP_LABELS[step + 1]}</span>
+            <ArrowRight size={16} />
+          </button>
+        ) : (
+          <button type="button" className="btn btn--primary" onClick={handleCheckout}>
+            <span>Proceed to checkout</span>
+            <ArrowRight size={16} />
+          </button>
+        )}
+      </footer>
+    </main>
   );
 }

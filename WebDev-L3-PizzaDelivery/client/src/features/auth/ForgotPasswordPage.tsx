@@ -1,9 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { apiAuth, ApiError } from '../../shared/lib/api';
-import { Field } from '../../shared/ui/Field';
-import { Button } from '../../shared/ui/Button';
-import { Alert } from '../../shared/ui/Alert';
+import { Mail, Info, CheckCircle } from 'lucide-react';
 
 export function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
@@ -27,25 +25,27 @@ export function ForgotPasswordPage() {
   };
 
   return (
-    <div className="card form-card">
-      <h1>Forgot password</h1>
-      <p className="form-card__subtitle">Enter your email and we'll send a reset link if the account exists.</p>
-      {err && <Alert variant="error"><span className="alert__icon">⚠</span><span>{err}</span></Alert>}
-      {msg && <Alert variant="success"><span className="alert__icon">✓</span><span>{msg}</span></Alert>}
-      <form onSubmit={onSubmit} noValidate>
-        <Field
-          label="Email"
-          name="email"
-          type="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <Button type="submit" loading={loading} className="btn--full mt-2">Send reset link</Button>
-      </form>
-      <div className="form-links">
-        <Link to="/login">Back to sign in</Link>
+    <main className="auth-stack">
+      <div className="section-label">Auth View 4 · Forgot Password</div>
+      <div className="auth-card">
+        <h1 className="auth-heading">Forgot password</h1>
+        <p className="auth-intro">Enter your email and we'll send a secure token to reset your password.</p>
+        {err && <div className="alert alert--error"><Info size={20} /><span>{err}</span></div>}
+        {msg && <div className="alert alert--success"><CheckCircle size={20} /><span>{msg}</span></div>}
+        <form onSubmit={onSubmit} noValidate>
+          <div className="form-group">
+            <label htmlFor="forgot-email" className="form-label">Email address</label>
+            <input id="forgot-email" type="email" className="form-input" placeholder="elena@example.com" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          </div>
+          <button type="submit" className="btn btn--primary btn--full" disabled={loading} style={{ marginTop: 8, marginBottom: 20 }}>
+            <span>{loading ? 'Sending…' : 'Send reset link'}</span>
+            <Mail size={16} />
+          </button>
+          <div className="auth-links">
+            <p><Link to="/login">Back to sign in</Link></p>
+          </div>
+        </form>
       </div>
-    </div>
+    </main>
   );
 }

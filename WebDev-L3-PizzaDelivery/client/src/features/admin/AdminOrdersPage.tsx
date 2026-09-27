@@ -4,7 +4,7 @@ import { apiAdmin, type OrderPublic } from '../../shared/lib/api';
 import { useAuth } from '../../shared/hooks/useAuth';
 import { authSocket, onOrderStatusChanged } from '../../shared/lib/socket';
 import { LoadingState, EmptyState } from '../../shared/ui/States';
-import { Alert } from '../../shared/ui/Alert';
+import { Flame, Truck, CheckCircle } from 'lucide-react';
 
 const NEXT_STATUS: Record<OrderPublic['status'], OrderPublic['status'] | null> = {
   received: 'in_kitchen',
@@ -22,8 +22,7 @@ function OrderRow({ order }: { order: OrderPublic }) {
   const qc = useQueryClient();
   const [err, setErr] = useState<string | null>(null);
   const advance = useMutation({
-    mutationFn: (next: OrderPublic['status']) =>
-      apiAdmin.changeOrderStatus(order.id, next),
+    mutationFn: (next: OrderPublic['status']) => apiAdmin.changeOrderStatus(order.id, next),
     onSuccess: () => void qc.invalidateQueries({ queryKey: ['admin-orders'] }),
     onError: (e) => setErr((e as Error).message),
   });
@@ -36,45 +35,35 @@ function OrderRow({ order }: { order: OrderPublic }) {
   const next = NEXT_STATUS[order.status];
 
   return (
-    <article className="card">
-      <div className="flex-between mb-2">
+    <article className="order-card" aria-label={`Order ${order.id.slice(-6)}`}>
+      <div className="order-top">
         <div>
-          <h3 className="font-semibold">#{order.id.slice(-6)}</h3>
-          <div className="muted text-sm">
-            {order.quantity} × {order.base.name}, {order.sauce.name}, {order.cheese.name}
-            {order.vegetables.length > 0 ? ` + ${order.vegetables.map((v) => v.name).join(', ')}` : ''}
-          </div>
+          <h3 className="order-number">#{order.id.slice(-6)}</h3>
+          <p className="order-desc-text">{order.quantity} × {order.base.name}, {order.sauce.name}, {order.cheese.name}{order.vegetables.length > 0 ? ` + ${order.vegetables.map((v) => v.name).join(', ')}` : ''}</p>
         </div>
-        <div className="flex gap-2">
-          <span className={`badge badge--${order.status}`}>{order.status}</span>
+        <div className="badge-group">
+          <span className={`badge badge--${order.status}`}>{order.status.replace(/_/g, ' ')}</span>
           <span className={`badge badge--${order.paymentStatus}`}>{order.paymentStatus}</span>
         </div>
       </div>
-      <div className="muted text-sm">
-        {new Date(order.createdAt).toLocaleString()} · {formatPrice(order.price)}
-      </div>
-      {err && <Alert variant="error">{err}</Alert>}
-      <div className="flex flex-wrap mt-4">
-        {next && (
-          <button
-            type="button"
-            className="btn btn--small"
-            onClick={() => advance.mutate(next)}
-            disabled={advance.isPending}
-          >
-            Move to {next.replace(/_/g, ' ')}
-          </button>
-        )}
-        {(order.status === 'received' || order.status === 'in_kitchen') && (
-          <button
-            type="button"
-            className="btn btn--small btn--danger"
-            onClick={() => cancel.mutate()}
-            disabled={cancel.isPending}
-          >
-            Cancel order
-          </button>
-        )}
+      {err && <div className="alert alert--error"><span>{err}</span></div>}
+      <div className="order-bot">
+        <span className="order-meta">{new Date(order.createdAt).toLocaleString()} · {formatPrice(order.price)}</span>
+        <div className="actions-group">
+          {next && (
+            <button type="button" className="btn-action-primary" onClick={() => advance.mutate(next)} disabled={advance.isPending}>
+              <span>Move to {next.replace(/_/g, ' ')}</span>
+              {next === 'in_kitchen' && <Flame size={14} />}
+              {next === 'out_for_delivery' && <Truck size={14} />}
+              {next === 'delivered' && <CheckCircle size={14} />}
+            </button>
+          )}
+          {(order.status === 'received' || order.status === 'in_kitchen') && (
+            <button type="button" className="btn-action-danger" onClick={() => cancel.mutate()} disabled={cancel.isPending}>
+              Cancel order
+            </button>
+          )}
+        </div>
       </div>
     </article>
   );
@@ -109,27 +98,39 @@ export function AdminOrdersPage() {
   const done = orders.filter((o) => o.status === 'delivered' || o.status === 'cancelled');
 
   return (
-    <div className="stack--lg">
-      <div className="section-header" style={{ marginBottom: 0 }}>
-        <h1>Orders board</h1>
-        <p>Customer-side status updates fire automatically when you change a status.</p>
-      </div>
-      <section>
-        <h2 style={{ fontSize: '1.25rem', marginBottom: 'var(--space-4)' }}>Active ({active.length})</h2>
+    <main className="board-wrap">
+      <header>
+        <h1 className="page-title">Orders board</h1>
+        <p className="page-subtitle">Customer-side status updates fire automatically when you change a status.</p>
+      </header>
+
+      <section aria-labelledby="active-orders-title">
+        <h2 id="active-orders-title" className="board-section-title">Active ({active.length})</h2>
         {active.length === 0 ? (
-          <EmptyState title="No active orders" />
+          <div className="empty-state-card">
+            <span className="empty-state__icon">🍕</span>
+            <p style={{ fontWeight: 500 }}>No active orders</p>
+          </div>
         ) : (
-          <div className="stack">{active.map((o) => <OrderRow key={o.id} order={o} />)}</div>
+          <div className="stack--sm" style={{ marginBottom: 48 }}>
+            {active.map((o) => <OrderRow key={o.id} order={o} />)}
+          </div>
         )}
       </section>
-      <section>
-        <h2 style={{ fontSize: '1.25rem', marginBottom: 'var(--space-4)' }}>Completed ({done.length})</h2>
+
+      <section aria-labelledby="completed-orders-title">
+        <h2 id="completed-orders-title" className="board-section-title">Completed ({done.length})</h2>
         {done.length === 0 ? (
-          <EmptyState title="No completed orders yet" />
+          <div className="empty-state-card">
+            <span className="empty-state__icon">🍕</span>
+            <p style={{ fontWeight: 500 }}>No completed orders yet</p>
+          </div>
         ) : (
-          <div className="stack">{done.map((o) => <OrderRow key={o.id} order={o} />)}</div>
+          <div className="stack--sm">
+            {done.map((o) => <OrderRow key={o.id} order={o} />)}
+          </div>
         )}
       </section>
-    </div>
+    </main>
   );
 }

@@ -91,7 +91,7 @@ else
   log_fail "Menu cats" "missing"
 fi
 if has_text "classic hand tossed"; then log_pass "Seeded items"; else log_fail "Menu items" "missing"; fi
-ITEM_COUNT=$(agent-browser eval "document.querySelectorAll('article.card').length" 2>&1 | tail -1)
+ITEM_COUNT=$(agent-browser eval "document.querySelectorAll('article.order-card').length" 2>&1 | tail -1)
 echo "    Cards: $ITEM_COUNT"
 agent-browser screenshot /tmp/screens/02-menu.png --full 2>&1 | tail -1
 
@@ -151,8 +151,8 @@ echo "========================================"
 echo "--- 3.1 Register ---"
 open_page "$BASE_URL/register"
 SNAP=$(agent-browser snapshot -i 2>&1)
-NAME_REF=$(get_ref "$SNAP" 'textbox "Name"')
-EMAIL_REF=$(get_ref "$SNAP" 'textbox "Email"')
+NAME_REF=$(get_ref "$SNAP" 'textbox "Full Name"')
+EMAIL_REF=$(get_ref "$SNAP" 'textbox "Email address"')
 PWD_REF=$(get_ref "$SNAP" 'textbox "Password"')
 BTN_REF=$(get_ref "$SNAP" 'button "Create account"')
 agent-browser fill "@$NAME_REF" "Test Customer" 2>&1 | tail -1
@@ -171,7 +171,7 @@ agent-browser screenshot /tmp/screens/06-register.png --full 2>&1 | tail -1
 echo "--- 3.2 Login before verify (403) ---"
 open_page "$BASE_URL/login"
 SNAP=$(agent-browser snapshot -i 2>&1)
-EMAIL_REF=$(get_ref "$SNAP" 'textbox "Email"')
+EMAIL_REF=$(get_ref "$SNAP" 'textbox "Email address"')
 PWD_REF=$(get_ref "$SNAP" 'textbox "Password"')
 BTN_REF=$(get_ref "$SNAP" 'button "Sign in"')
 agent-browser fill "@$EMAIL_REF" "$CUSTOMER_EMAIL" 2>&1 | tail -1
@@ -194,7 +194,7 @@ fi
 echo "--- 3.4 Login ---"
 open_page "$BASE_URL/login"
 SNAP=$(agent-browser snapshot -i 2>&1)
-EMAIL_REF=$(get_ref "$SNAP" 'textbox "Email"')
+EMAIL_REF=$(get_ref "$SNAP" 'textbox "Email address"')
 PWD_REF=$(get_ref "$SNAP" 'textbox "Password"')
 BTN_REF=$(get_ref "$SNAP" 'button "Sign in"')
 agent-browser fill "@$EMAIL_REF" "$CUSTOMER_EMAIL" 2>&1 | tail -1
@@ -220,8 +220,8 @@ CARD_REF=$(echo "$SNAP" | grep 'button ".*₹' | grep -oE 'ref=e[0-9]+' | head -
 agent-browser click "@$CARD_REF" 2>&1 | tail -1
 sleep 1
 SNAP=$(agent-browser snapshot -i 2>&1)
-NEXT_REF=$(get_ref "$SNAP" 'button "Next"')
-agent-browser click "@$NEXT_REF" 2>&1 | tail -1
+NEXT_REF=$(get_ref "$SNAP" 'button "Next')
+agent-browser scroll down 400; agent-browser click "@$NEXT_REF" 2>&1 | tail -1
 sleep 2
 if has_text "pick your sauce"; then log_pass "Step 2 (sauce)"; else log_fail "Step 2" "missing"; fi
 
@@ -230,8 +230,8 @@ CARD_REF=$(echo "$SNAP" | grep 'button ".*₹' | grep -oE 'ref=e[0-9]+' | head -
 agent-browser click "@$CARD_REF" 2>&1 | tail -1
 sleep 1
 SNAP=$(agent-browser snapshot -i 2>&1)
-NEXT_REF=$(get_ref "$SNAP" 'button "Next"')
-agent-browser click "@$NEXT_REF" 2>&1 | tail -1
+NEXT_REF=$(get_ref "$SNAP" 'button "Next')
+agent-browser scroll down 400; agent-browser click "@$NEXT_REF" 2>&1 | tail -1
 sleep 2
 if has_text "pick your cheese"; then log_pass "Step 3 (cheese)"; else log_fail "Step 3" "missing"; fi
 
@@ -240,8 +240,8 @@ CARD_REF=$(echo "$SNAP" | grep 'button ".*₹' | grep -oE 'ref=e[0-9]+' | head -
 agent-browser click "@$CARD_REF" 2>&1 | tail -1
 sleep 1
 SNAP=$(agent-browser snapshot -i 2>&1)
-NEXT_REF=$(get_ref "$SNAP" 'button "Next"')
-agent-browser click "@$NEXT_REF" 2>&1 | tail -1
+NEXT_REF=$(get_ref "$SNAP" 'button "Next')
+agent-browser scroll down 400; agent-browser click "@$NEXT_REF" 2>&1 | tail -1
 sleep 2
 if has_text "pick your vegetables"; then log_pass "Step 4 (veg)"; else log_fail "Step 4" "missing"; fi
 agent-browser screenshot /tmp/screens/10-builder-4.png --full 2>&1 | tail -1
@@ -256,8 +256,8 @@ sleep 1
 agent-browser click "@$SECOND" 2>&1 | tail -1
 sleep 1
 SNAP=$(agent-browser snapshot -i 2>&1)
-NEXT_REF=$(get_ref "$SNAP" 'button "Next"')
-agent-browser click "@$NEXT_REF" 2>&1 | tail -1
+NEXT_REF=$(get_ref "$SNAP" 'button "Next')
+agent-browser scroll down 400; agent-browser click "@$NEXT_REF" 2>&1 | tail -1
 sleep 2
 if has_text "summary"; then log_pass "Summary renders"; else log_fail "Summary" "missing"; fi
 if has_text "proceed to checkout"; then log_pass "Checkout btn"; else log_fail "Checkout btn" "missing"; fi
@@ -268,13 +268,13 @@ agent-browser screenshot /tmp/screens/11-summary.png --full 2>&1 | tail -1
 echo "--- 3.7 Checkout ---"
 SNAP=$(agent-browser snapshot -i 2>&1)
 CO_REF=$(get_ref "$SNAP" 'button "Proceed to checkout"')
-agent-browser click "@$CO_REF" 2>&1 | tail -1
+agent-browser scroll down 400; agent-browser click "@$CO_REF" 2>&1 | tail -1
 sleep 4
 agent-browser wait --load networkidle 2>&1 | tail -1
 sleep 2
 URL=$(get_url)
 if echo "$URL" | grep -q "/checkout"; then log_pass "Checkout loads"; else log_fail "Checkout" "URL=$URL"; fi
-if has_text "order details"; then log_pass "Order details"; else log_fail "Order details" "missing"; fi
+if has_text "custom pie configuration"; then log_pass "Order details"; else log_fail "Order details" "missing"; fi
 if has_text "pay (dev mock)"; then log_pass "Dev mock btn"; else log_fail "Dev mock" "missing"; fi
 # Wait for server-confirmed total (order creation may take a moment)
 for i in 1 2 3 4 5 6 7 8 9 10; do
@@ -297,7 +297,7 @@ for i in 1 2 3 4 5 6 7 8 9 10; do
   sleep 1
 done
 if [ -n "$PAY_REF" ]; then
-  agent-browser click "@$PAY_REF" 2>&1 | tail -1
+  agent-browser scroll down 400; agent-browser click "@$PAY_REF" 2>&1 | tail -1
   sleep 4
 else
   echo "    Pay button not found, trying eval..."
@@ -311,7 +311,7 @@ echo "--- 3.9 Orders ---"
 if has_text "your orders"; then log_pass "Orders renders"; else log_fail "Orders" "no heading"; fi
 if has_text "received"; then log_pass "Status visible"; else log_fail "Status" "missing"; fi
 if has_text "paid"; then log_pass "Paid badge"; else log_fail "Paid" "missing"; fi
-ORDER_COUNT=$(agent-browser eval "document.querySelectorAll('article.card').length" 2>&1 | tail -1)
+ORDER_COUNT=$(agent-browser eval "document.querySelectorAll('article.order-card').length" 2>&1 | tail -1)
 echo "    Orders: $ORDER_COUNT"
 agent-browser screenshot /tmp/screens/13-orders.png --full 2>&1 | tail -1
 
@@ -347,7 +347,7 @@ sleep 3
 echo "--- 4.2 Admin login ---"
 open_page "$BASE_URL/admin/login"
 SNAP=$(agent-browser snapshot -i 2>&1)
-EMAIL_REF=$(get_ref "$SNAP" 'textbox "Email"')
+EMAIL_REF=$(get_ref "$SNAP" 'textbox "Email address"')
 PWD_REF=$(get_ref "$SNAP" 'textbox "Password"')
 BTN_REF=$(get_ref "$SNAP" 'button "Sign in"')
 agent-browser fill "@$EMAIL_REF" "admin@ovenly.dev" 2>&1 | tail -1
@@ -397,7 +397,7 @@ open_page "$BASE_URL/admin/orders"
 sleep 3
 URL=$(get_url); if echo "$URL" | grep -q "/admin/orders"; then log_pass "Board loads"; else log_fail "Board" "URL=$URL"; fi
 if has_text "orders board"; then log_pass "Board renders"; else log_fail "Board" "no heading"; fi
-ORDER_COUNT=$(agent-browser eval "document.querySelectorAll('article.card').length" 2>&1 | tail -1)
+ORDER_COUNT=$(agent-browser eval "document.querySelectorAll('article.order-card').length" 2>&1 | tail -1)
 echo "    Orders: $ORDER_COUNT"
 if [ "$ORDER_COUNT" -ge 1 ]; then log_pass "Orders visible"; else log_fail "Orders" "0 cards"; fi
 agent-browser screenshot /tmp/screens/16-admin-orders.png --full 2>&1 | tail -1
@@ -408,7 +408,7 @@ MOVE_REF=$(get_ref "$SNAP" 'button "Move to in kitchen"')
 if [ -n "$MOVE_REF" ]; then
   agent-browser click "@$MOVE_REF" 2>&1 | tail -1
   sleep 3
-  if has_text "in_kitchen"; then log_pass "Moved to in_kitchen"; else log_fail "in_kitchen" "no badge"; fi
+  if has_text "in kitchen"; then log_pass "Moved to in_kitchen"; else log_fail "in_kitchen" "no badge"; fi
 else
   log_fail "Move btn" "not found"
 fi
@@ -420,7 +420,7 @@ MOVE_REF=$(get_ref "$SNAP" 'button "Move to out for delivery"')
 if [ -n "$MOVE_REF" ]; then
   agent-browser click "@$MOVE_REF" 2>&1 | tail -1
   sleep 3
-  if has_text "out_for_delivery"; then log_pass "Moved to out_for_delivery"; else log_fail "out_for_delivery" "no badge"; fi
+  if has_text "out for delivery"; then log_pass "Moved to out_for_delivery"; else log_fail "out_for_delivery" "no badge"; fi
 else
   log_fail "Move btn" "not found"
 fi
@@ -469,8 +469,8 @@ echo "--- 5.2 Form validation ---"
 agent-browser set viewport 1280 800 2>&1 | tail -1
 open_page "$BASE_URL/register"
 SNAP=$(agent-browser snapshot -i 2>&1)
-NAME_REF=$(get_ref "$SNAP" 'textbox "Name"')
-EMAIL_REF=$(get_ref "$SNAP" 'textbox "Email"')
+NAME_REF=$(get_ref "$SNAP" 'textbox "Full Name"')
+EMAIL_REF=$(get_ref "$SNAP" 'textbox "Email address"')
 PWD_REF=$(get_ref "$SNAP" 'textbox "Password"')
 BTN_REF=$(get_ref "$SNAP" 'button "Create account"')
 agent-browser fill "@$NAME_REF" "Bad" 2>&1 | tail -1
@@ -490,8 +490,8 @@ if [ -n "$SO_REF" ]; then agent-browser click "@$SO_REF" 2>&1 | tail -1; fi
 sleep 3
 open_page "$BASE_URL/register"
 SNAP=$(agent-browser snapshot -i 2>&1)
-NAME_REF=$(get_ref "$SNAP" 'textbox "Name"')
-EMAIL_REF=$(get_ref "$SNAP" 'textbox "Email"')
+NAME_REF=$(get_ref "$SNAP" 'textbox "Full Name"')
+EMAIL_REF=$(get_ref "$SNAP" 'textbox "Email address"')
 PWD_REF=$(get_ref "$SNAP" 'textbox "Password"')
 BTN_REF=$(get_ref "$SNAP" 'button "Create account"')
 agent-browser fill "@$NAME_REF" "Empty User" 2>&1 | tail -1
@@ -509,7 +509,7 @@ if [ -n "$TOKEN" ]; then
 fi
 open_page "$BASE_URL/login"
 SNAP=$(agent-browser snapshot -i 2>&1)
-EMAIL_REF=$(get_ref "$SNAP" 'textbox "Email"')
+EMAIL_REF=$(get_ref "$SNAP" 'textbox "Email address"')
 PWD_REF=$(get_ref "$SNAP" 'textbox "Password"')
 BTN_REF=$(get_ref "$SNAP" 'button "Sign in"')
 agent-browser fill "@$EMAIL_REF" "$EMPTY_EMAIL" 2>&1 | tail -1
@@ -553,7 +553,7 @@ echo "    Focused: $FOCUSED"
 if echo "$INPUT_FOCUSED" | grep -q "true"; then log_pass "Tab reaches input"; else log_fail "Keyboard" "focused $FOCUSED"; fi
 
 echo "--- 5.7 Focus visibility ---"
-HAS_OUTLINE=$(agent-browser eval "var el=document.activeElement;var s=getComputedStyle(el);(s.outlineStyle!=='none'&&s.outlineWidth!=='0px')?'VISIBLE':'NONE'" 2>&1 | tail -1)
+HAS_OUTLINE=$(agent-browser eval "var el=document.activeElement;var s=getComputedStyle(el);(s.outlineStyle!=='none'&&s.outlineWidth!=='0px')||(s.boxShadow!=='none'&&s.boxShadow!=='')?'VISIBLE':'NONE'" 2>&1 | tail -1)
 if echo "$HAS_OUTLINE" | grep -q "VISIBLE"; then log_pass "Focus visible"; else log_fail "Focus" "no outline"; fi
 
 echo ""

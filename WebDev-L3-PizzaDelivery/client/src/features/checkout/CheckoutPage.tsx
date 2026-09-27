@@ -8,8 +8,7 @@ import {
   ApiError,
   type OrderPublic,
 } from '../../shared/lib/api';
-import { Button } from '../../shared/ui/Button';
-import { Alert } from '../../shared/ui/Alert';
+import { ArrowLeft, CheckCircle, Info, ShieldCheck } from 'lucide-react';
 import { LoadingState, EmptyState } from '../../shared/ui/States';
 
 function formatPrice(p: number) {
@@ -74,15 +73,11 @@ export function CheckoutPage() {
     mutationFn: () =>
       apiOrders.create({ baseId, sauceId, cheeseId, vegetableIds: vegIds, quantity }),
     onSuccess: (data) => {
-      if (data?.order) {
-        setOrder(data.order);
-      } else {
-        setErr('Server returned an unexpected response. Please retry.');
-      }
+      if (data?.order) setOrder(data.order);
+      else setErr('Server returned an unexpected response. Please retry.');
     },
     onError: (e) => {
-      const msg = e instanceof ApiError ? e.message : e instanceof Error ? e.message : 'Could not create order';
-      setErr(msg);
+      setErr(e instanceof ApiError ? e.message : e instanceof Error ? e.message : 'Could not create order');
     },
   });
 
@@ -94,10 +89,7 @@ export function CheckoutPage() {
       return created;
     },
     onSuccess: async (created) => {
-      if (!window.Razorpay) {
-        setErr('Razorpay script failed to load');
-        return;
-      }
+      if (!window.Razorpay) { setErr('Razorpay script failed to load'); return; }
       const rzp = new window.Razorpay({
         key: created.keyId,
         amount: created.amount,
@@ -135,8 +127,6 @@ export function CheckoutPage() {
     onError: (e) => setErr(e instanceof ApiError ? e.message : 'Dev mock failed'),
   });
 
-  // Auto-create the order ONCE, after the catalog loads and params are validated.
-  // Uses a ref to prevent double-fire in React StrictMode.
   useEffect(() => {
     if (createdRef.current) return;
     if (isLoading || !catalog) return;
@@ -157,10 +147,10 @@ export function CheckoutPage() {
 
   if (!baseId || !sauceId || !cheeseId) {
     return (
-      <div className="stack">
-        <Alert variant="error">Missing pizza configuration. Please build your pizza first.</Alert>
-        <Button onClick={() => navigate('/build')}>Build your pizza</Button>
-      </div>
+      <main className="checkout-wrap">
+        <div className="alert alert--error"><span>Missing pizza configuration. Please build your pizza first.</span></div>
+        <button className="btn btn--primary" onClick={() => navigate('/build')}>Build your pizza</button>
+      </main>
     );
   }
 
@@ -169,119 +159,85 @@ export function CheckoutPage() {
   const sauce = byId(sauceId);
   const cheese = byId(cheeseId);
   const vegs = vegIds.map(byId).filter(Boolean);
-  const unit =
-    (base?.price ?? 0) + (sauce?.price ?? 0) + (cheese?.price ?? 0) +
-    vegs.reduce((s, v) => s + (v?.price ?? 0), 0);
+  const unit = (base?.price ?? 0) + (sauce?.price ?? 0) + (cheese?.price ?? 0) + vegs.reduce((s, v) => s + (v?.price ?? 0), 0);
 
   const orderCreating = createOrder.isPending;
   const orderFailed = createOrder.isError && !order;
 
   return (
-    <div className="stack--lg">
-      <div className="section-header">
-        <h1>Checkout</h1>
-        <p>Server recalculates the total — the number below is informational.</p>
-      </div>
+    <main className="checkout-wrap">
+      <header>
+        <h1 className="page-title">Checkout</h1>
+        <p className="page-subtitle">Server recalculates the total — the number below is informational.</p>
+      </header>
 
-      {err && <Alert variant="error"><span className="alert__icon">⚠</span><span>{err}</span></Alert>}
+      {err && <div className="alert alert--error"><Info size={20} /><span>{err}</span></div>}
       {orderFailed && (
-        <Alert variant="error">
-          <span className="alert__icon">⚠</span>
+        <div className="alert alert--error">
+          <Info size={20} />
           <span>
             Could not create order: {err ?? 'Unknown error'}.{' '}
-            <button
-              type="button"
-              onClick={handleRetry}
-              style={{ background: 'none', border: 'none', color: 'inherit', textDecoration: 'underline', cursor: 'pointer', display: 'inline', padding: 0, font: 'inherit', fontWeight: 600 }}
-            >
-              Retry
-            </button>
+            <button onClick={handleRetry} style={{ background: 'none', border: 'none', color: 'inherit', textDecoration: 'underline', cursor: 'pointer', fontWeight: 600 }}>Retry</button>
           </span>
-        </Alert>
+        </div>
       )}
 
-      <div className="card" style={{ maxWidth: 480 }}>
-        <h2 style={{ fontSize: '1.125rem', marginBottom: 'var(--space-4)' }}>Order details</h2>
-        <div className="detail-row">
-          <span className="detail-row__label">Base</span>
-          <span className="detail-row__value">{base?.name ?? '—'}</span>
-        </div>
-        <div className="detail-row">
-          <span className="detail-row__label">Sauce</span>
-          <span className="detail-row__value">{sauce?.name ?? '—'}</span>
-        </div>
-        <div className="detail-row">
-          <span className="detail-row__label">Cheese</span>
-          <span className="detail-row__value">{cheese?.name ?? '—'}</span>
-        </div>
-        <div className="detail-row">
-          <span className="detail-row__label">Vegetables</span>
-          <span className="detail-row__value">{vegs.map((v) => v?.name).join(', ') || '—'}</span>
-        </div>
-        <div className="detail-row">
-          <span className="detail-row__label">Quantity</span>
-          <span className="detail-row__value">{quantity}</span>
-        </div>
-        <div className="detail-row">
-          <span className="detail-row__label">Unit price</span>
-          <span className="detail-row__value">{formatPrice(unit)}</span>
-        </div>
-        <div className="detail-row detail-row--total">
-          <span className="detail-row__label">Estimated total</span>
-          <span className="detail-row__value">{formatPrice(unit * quantity)}</span>
+      {/* Order Details Card */}
+      <article className="checkout-card">
+        <h2 className="card-heading">Custom Pie Configuration</h2>
+        <div className="order-row"><span className="order-label">Base</span><span className="order-value">{base?.name ?? '—'}</span></div>
+        <div className="order-row"><span className="order-label">Sauce</span><span className="order-value">{sauce?.name ?? '—'}</span></div>
+        <div className="order-row"><span className="order-label">Cheese</span><span className="order-value">{cheese?.name ?? '—'}</span></div>
+        <div className="order-row"><span className="order-label">Vegetables</span><span className="order-value">{vegs.map((v) => v?.name).join(', ') || '—'}</span></div>
+        <div className="order-row"><span className="order-label">Quantity</span><span className="order-value">{quantity}</span></div>
+        <div className="order-row"><span className="order-label">Unit price</span><span className="order-value">{formatPrice(unit)}</span></div>
+        <hr className="divider" />
+        <div className="total-row">
+          <span className="total-label">Estimated total</span>
+          <span className="total-value">{formatPrice(unit * quantity)}</span>
         </div>
         {order && (
-          <div className="muted text-sm mt-4" style={{ textAlign: 'center' }}>
-            Server-confirmed total: <strong>{formatPrice(order.price)}</strong> ·{' '}
-            <span className={`badge badge--${order.paymentStatus}`}>{order.paymentStatus}</span>
-          </div>
+          <p className="server-status-line">
+            <span>Server-confirmed total: <strong>{formatPrice(order.price)}</strong></span>
+            <span>(status: <span className={`badge badge--${order.paymentStatus}`}>{order.paymentStatus}</span>)</span>
+          </p>
         )}
         {orderCreating && (
-          <div className="muted text-sm mt-3" style={{ textAlign: 'center' }}>
-            <span className="spinner spinner--sm" aria-hidden="true" /> Creating your order…
+          <p className="server-status-line"><span className="spinner spinner--sm" /> Creating your order…</p>
+        )}
+      </article>
+
+      {/* Payment Card */}
+      <article className="checkout-card">
+        <h2 className="card-heading">Payment</h2>
+        {!RAZORPAY_KEY && IS_DEV && (
+          <div className="alert alert--info">
+            <Info size={20} />
+            <div>No Razorpay test key configured. Use the dev mock button below — it mirrors the verify flow server-side without making a real charge. Disabled in production.</div>
           </div>
         )}
-      </div>
-
-      <div className="card" style={{ maxWidth: 480 }}>
-        <h2 style={{ fontSize: '1.125rem', marginBottom: 'var(--space-4)' }}>Payment</h2>
-        {!RAZORPAY_KEY && IS_DEV && (
-          <Alert variant="info">
-            <span className="alert__icon">ℹ</span>
-            <span>
-              No Razorpay test key configured. Use the dev mock button below — it mirrors the verify flow
-              server-side without making a real charge. Disabled in production.
-            </span>
-          </Alert>
-        )}
-        {!RAZORPAY_KEY && !IS_DEV && (
-          <Alert variant="error"><span className="alert__icon">⚠</span><span>Razorpay key missing and dev mock is disabled outside development.</span></Alert>
-        )}
-        <div className="flex flex-wrap mt-5">
+        <div className="button-group">
           {orderFailed ? (
-            <Button variant="secondary" onClick={handleRetry} loading={orderCreating}>
-              Retry order creation
-            </Button>
+            <button className="btn btn--secondary btn--full" onClick={handleRetry} disabled={orderCreating}>
+              {orderCreating ? 'Retrying…' : 'Retry order creation'}
+            </button>
           ) : RAZORPAY_KEY ? (
-            <Button
-              onClick={() => payWithRazorpay.mutate()}
-              loading={payWithRazorpay.isPending || orderCreating || !order}
-              disabled={!order}
-            >
-              Pay {order ? formatPrice(order.price) : ''}
-            </Button>
+            <button className="btn btn--primary btn--full" onClick={() => payWithRazorpay.mutate()} disabled={!order || payWithRazorpay.isPending || orderCreating}>
+              <CheckCircle size={18} />
+              <span>Pay {order ? formatPrice(order.price) : ''}</span>
+            </button>
           ) : IS_DEV ? (
-            <Button
-              onClick={() => payWithDevMock.mutate()}
-              loading={payWithDevMock.isPending || orderCreating || !order}
-              disabled={!order}
-            >
-              {orderCreating ? 'Creating order…' : `Pay (dev mock)${order ? ' · ' + formatPrice(order.price) : ''}`}
-            </Button>
+            <button className="btn btn--primary btn--full" onClick={() => payWithDevMock.mutate()} disabled={!order || payWithDevMock.isPending || orderCreating}>
+              <CheckCircle size={18} />
+              <span>{orderCreating ? 'Creating order…' : `Pay (dev mock) ${order ? formatPrice(order.price) : ''}`}</span>
+            </button>
           ) : null}
-          <Button variant="ghost" onClick={() => navigate('/build')}>Back to builder</Button>
+          <button className="btn btn--ghost btn--full" onClick={() => navigate('/build')}>
+            <ArrowLeft size={16} />
+            <span>Back to builder</span>
+          </button>
         </div>
-      </div>
-    </div>
+      </article>
+    </main>
   );
 }

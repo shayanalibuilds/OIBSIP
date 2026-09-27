@@ -20,9 +20,9 @@ function Layout() {
   return (
     <div className="app-shell">
       <Navbar />
-      <main className="app-main">
+      <div className="app-main">
         <Outlet />
-      </main>
+      </div>
       <Footer />
     </div>
   );
