@@ -62,7 +62,7 @@ function OrderRow({ order }: { order: OrderPublic }) {
             onClick={() => advance.mutate(next)}
             disabled={advance.isPending}
           >
-            Move to {next.replace('_', ' ')}
+            Move to {next.replace(/_/g, ' ')}
           </button>
         )}
         {(order.status === 'received' || order.status === 'in_kitchen') && (

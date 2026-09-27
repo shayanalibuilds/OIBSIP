@@ -20,8 +20,11 @@ export function RegisterPage() {
     const newErrs: Record<string, string> = {};
     if (!name.trim()) newErrs.name = 'Name is required';
     if (!/^\S+@\S+\.\S+$/.test(email)) newErrs.email = 'Enter a valid email';
-    if (password.length < 8) newErrs.password = 'At least 8 characters';
-    if (!/[0-9]/.test(password)) newErrs.password = 'Must contain a number';
+    if (password.length < 8) {
+      newErrs.password = 'At least 8 characters';
+    } else if (!/[0-9]/.test(password)) {
+      newErrs.password = 'Must contain a number';
+    }
     setErrs(newErrs);
     if (Object.keys(newErrs).length > 0) return;
 
