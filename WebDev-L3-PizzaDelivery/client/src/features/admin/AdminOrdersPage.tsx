@@ -18,17 +18,28 @@ function formatPrice(p: number) {
   return `₹${p.toFixed(2)}`;
 }
 
-function OrderRow({ order }: { order: OrderPublic }) {
+function OrderRow({ order, tick }: { order: OrderPublic; tick: number }) {
   const qc = useQueryClient();
   const [err, setErr] = useState<string | null>(null);
   const advance = useMutation({
     mutationFn: (next: OrderPublic['status']) => apiAdmin.changeOrderStatus(order.id, next),
-    onSuccess: () => void qc.invalidateQueries({ queryKey: ['admin-orders'] }),
+    onSuccess: (data) => {
+      // Optimistically update the cache to avoid full refetch CLS
+      qc.setQueryData<{ orders: OrderPublic[] }>(['admin-orders', tick], (old) => {
+        if (!old) return old;
+        return { orders: old.orders.map((o) => (o.id === data.order.id ? data.order : o)) };
+      });
+    },
     onError: (e) => setErr((e as Error).message),
   });
   const cancel = useMutation({
     mutationFn: () => apiAdmin.changeOrderStatus(order.id, 'cancelled'),
-    onSuccess: () => void qc.invalidateQueries({ queryKey: ['admin-orders'] }),
+    onSuccess: (data) => {
+      qc.setQueryData<{ orders: OrderPublic[] }>(['admin-orders', tick], (old) => {
+        if (!old) return old;
+        return { orders: old.orders.map((o) => (o.id === data.order.id ? data.order : o)) };
+      });
+    },
     onError: (e) => setErr((e as Error).message),
   });
 
@@ -113,7 +124,7 @@ export function AdminOrdersPage() {
           </div>
         ) : (
           <div className="stack--sm" style={{ marginBottom: 48 }}>
-            {active.map((o) => <OrderRow key={o.id} order={o} />)}
+            {active.map((o) => <OrderRow key={o.id} order={o} tick={tick} />)}
           </div>
         )}
       </section>
@@ -127,7 +138,7 @@ export function AdminOrdersPage() {
           </div>
         ) : (
           <div className="stack--sm">
-            {done.map((o) => <OrderRow key={o.id} order={o} />)}
+            {done.map((o) => <OrderRow key={o.id} order={o} tick={tick} />)}
           </div>
         )}
       </section>

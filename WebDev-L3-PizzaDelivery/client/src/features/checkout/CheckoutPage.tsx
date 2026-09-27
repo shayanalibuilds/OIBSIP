@@ -197,10 +197,10 @@ export function CheckoutPage() {
           <span className="total-value">{formatPrice(unit * quantity)}</span>
         </div>
         {order && (
-          <p className="server-status-line">
+          <div className="server-status-line">
             <span>Server-confirmed total: <strong>{formatPrice(order.price)}</strong></span>
-            <span>(status: <span className={`badge badge--${order.paymentStatus}`}>{order.paymentStatus}</span>)</span>
-          </p>
+            <span className={`badge badge--${order.paymentStatus}`}>{order.paymentStatus}</span>
+          </div>
         )}
         {orderCreating && (
           <p className="server-status-line"><span className="spinner spinner--sm" /> Creating your order…</p>

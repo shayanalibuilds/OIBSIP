@@ -141,7 +141,7 @@ h1, h2, h3, h4 {
 }
 .nav-container {
   max-width: 1200px; width: 100%; margin: 0 auto;
-  display: flex; align-items: center; justify-content: space-between;
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
 }
 .brand {
   display: flex; align-items: center; gap: 6px;
@@ -153,7 +153,7 @@ h1, h2, h3, h4 {
   width: 7px; height: 7px; background-color: var(--accent);
   border-radius: 50%; display: inline-block; margin-left: -2px;
 }
-.nav-links { display: flex; align-items: center; gap: 28px; }
+.nav-links { display: flex; align-items: center; gap: 28px; justify-self: center; }
 .nav-link {
   font-size: 15px; font-weight: 500; color: var(--text-muted);
   text-decoration: none; transition: color 0.15s ease;
@@ -161,7 +161,7 @@ h1, h2, h3, h4 {
 }
 .nav-link:hover { color: var(--text); text-decoration: none; }
 .nav-link.active { color: var(--primary); font-weight: 600; }
-.nav-actions { display: flex; align-items: center; gap: 16px; }
+.nav-actions { display: flex; align-items: center; gap: 16px; justify-self: end; }
 .nav-user { font-size: 14px; font-weight: 500; color: var(--text-muted); }
 .admin-badge {
   font-family: var(--font-sans); font-size: 12px; font-weight: 700;
@@ -553,7 +553,7 @@ h1, h2, h3, h4 {
 .craft-banner-inner { background: var(--text); color: #FFF; border-radius: var(--radius-xl); padding: 48px; display: flex; align-items: center; justify-content: space-between; gap: 36px; position: relative; overflow: hidden; }
 .craft-content { max-width: 640px; }
 .craft-eyebrow { color: var(--accent); font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; display: inline-flex; align-items: center; gap: 6px; }
-.craft-title { font-family: var(--font-serif); font-size: clamp(1.8rem, 2.8vw, 2.3rem); font-weight: 700; line-height: 1.2; margin-bottom: 12px; }
+.craft-title { font-family: var(--font-serif); font-size: clamp(1.8rem, 2.8vw, 2.3rem); font-weight: 700; line-height: 1.2; margin-bottom: 12px; color: #FFFFFF; }
 .craft-desc { font-size: 16px; color: #DFD5CD; line-height: 1.6; }
 
 /* ---------- Footer ---------- */
@@ -594,7 +594,7 @@ h1, h2, h3, h4 {
 }
 @media (max-width: 640px) {
   .navbar { height: auto; padding: 12px 16px; }
-  .nav-container { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .nav-container { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
   .nav-links { width: 100%; overflow-x: auto; gap: 16px; }
   .ingredient-grid-home { grid-template-columns: 1fr; }
   .hero-stats { grid-template-columns: 1fr; }

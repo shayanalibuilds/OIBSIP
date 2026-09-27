@@ -23,9 +23,13 @@ function Row({ item }: { item: AdminInventoryItem }) {
       if (Object.keys(patch).length === 0) return Promise.resolve({ item });
       return apiAdmin.patchInventory(item.id, patch);
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       setMsg('Saved');
-      void qc.invalidateQueries({ queryKey: ['admin-inventory'] });
+      // Optimistically update the cache to avoid full refetch CLS
+      qc.setQueryData<{ items: AdminInventoryItem[] }>(['admin-inventory'], (old) => {
+        if (!old) return old;
+        return { items: old.items.map((i) => (i.id === data.item.id ? data.item : i)) };
+      });
       setTimeout(() => setMsg(null), 1500);
     },
     onError: (e) => setMsg((e as Error).message),
@@ -56,10 +60,12 @@ function Row({ item }: { item: AdminInventoryItem }) {
         </label>
       </td>
       <td>
-        <button type="button" className="btn-save" onClick={() => save.mutate()} disabled={save.isPending}>
-          {save.isPending ? 'Saving…' : 'Save'}
-        </button>
-        {msg && <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>{msg}</div>}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <button type="button" className="btn-save" onClick={() => save.mutate()} disabled={save.isPending}>
+            {save.isPending ? 'Saving…' : 'Save'}
+          </button>
+          <span style={{ fontSize: 12, color: 'var(--text-muted)', minWidth: 40, display: 'inline-block' }}>{msg || ''}</span>
+        </div>
       </td>
     </tr>
   );
