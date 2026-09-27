@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Degree</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main>
+    <header>
+      <p>Degree</p>
+      <h1>Convert a temperature</h1>
+    </header>
+    <form id="converter" novalidate>
+      <label for="value">Value</label>
+      <input id="value" name="value" type="text" inputmode="decimal" autocomplete="off" placeholder="36.5" />
+      <div class="units" role="radiogroup" aria-label="Input unit">
+        <label class="chip"><input type="radio" name="unit" value="C" checked /> °C</label>
+        <label class="chip"><input type="radio" name="unit" value="F" /> °F</label>
+        <label class="chip"><input type="radio" name="unit" value="K" /> K</label>
+      </div>
+      <button type="submit">Convert</button>
+      <p class="error" id="error" hidden></p>
+    </form>
+    <section id="results" class="results" hidden>
+      <div><span>Celsius</span><strong id="outC">—</strong></div>
+      <div><span>Fahrenheit</span><strong id="outF">—</strong></div>
+      <div><span>Kelvin</span><strong id="outK">—</strong></div>
+    </section>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
