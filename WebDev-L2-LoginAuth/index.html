@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Keep — log in</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main>
+    <p class="mark">Keep</p>
+    <h1>Log in</h1>
+    <form id="login-form">
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" required />
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" required />
+      <p class="error" id="error" hidden></p>
+      <button type="submit">Continue</button>
+    </form>
+    <p class="alt">Need an account? <a href="register.html">Register</a></p>
+  </main>
+  <script src="auth.js"></script>
+  <script>
+    if (KeepAuth.session()) window.location.replace("dashboard.html");
+    const form = document.getElementById("login-form");
+    const error = document.getElementById("error");
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const result = await KeepAuth.login(form.email.value.trim(), form.password.value);
+      if (!result.ok) { error.hidden = false; error.textContent = result.message; return; }
+      window.location.href = "dashboard.html";
+    });
+  </script>
+</body>
+</html>
