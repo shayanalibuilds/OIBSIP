@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Slate</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Slate</h1>
+      <p>What needs doing.</p>
+    </header>
+    <form id="add-form">
+      <label class="sr" for="task-input">New task</label>
+      <input id="task-input" type="text" placeholder="Write a task and press return" autocomplete="off" />
+    </form>
+    <section>
+      <div class="count-row"><h2>Pending</h2><p id="pending-count">0</p></div>
+      <ul id="pending-list"></ul>
+      <p class="empty" id="pending-empty">Nothing waiting.</p>
+    </section>
+    <section>
+      <div class="count-row"><h2>Done</h2><p id="completed-count">0</p></div>
+      <ul id="completed-list"></ul>
+      <p class="empty" id="completed-empty">Nothing finished yet.</p>
+    </section>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
