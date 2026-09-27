@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 800" role="img" aria-label="Stylised portrait">
+  <rect width="640" height="800" fill="#d7c4a8"/>
+  <rect x="80" y="90" width="480" height="620" fill="#2c2118"/>
+  <circle cx="320" cy="300" r="110" fill="#e8d7bf"/>
+  <rect x="210" y="410" width="220" height="220" fill="#4a3728"/>
+  <rect x="180" y="400" width="280" height="40" fill="#c9a36a"/>
+</svg>
